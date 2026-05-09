@@ -1,6 +1,530 @@
-AURORA XER Insight Free v0.4
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>AURORA XER Insight Free v0.4</title>
+<style>
+:root{
+  --bg:#f4f7fb;--ink:#162033;--muted:#64748b;--panel:#fff;--line:#d8e0ea;
+  --blue:#0f5f99;--blue2:#123e68;--teal:#0e9f9a;--green:#15803d;--amber:#b45309;--red:#b91c1c;
+  --soft:#eef6ff;--dark:#10243b;
+}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Segoe UI,Arial,sans-serif}
+header{padding:20px 28px;color:#fff;background:linear-gradient(135deg,#0a335c,#0f6b9e 58%,#0e9f9a);box-shadow:0 8px 22px rgba(0,0,0,.13)}
+header h1{margin:0;font-size:26px}header p{margin:6px 0 0;color:#dff6ff;font-size:13px}
+.app{display:grid;grid-template-columns:318px 1fr;min-height:calc(100vh - 82px)}
+aside{background:var(--dark);color:#d7e7f5;padding:15px;overflow:auto}
+.brand,.box{border:1px solid rgba(255,255,255,.14);border-radius:14px;background:rgba(255,255,255,.055);padding:12px;margin-bottom:12px}
+.brand b{display:block;font-size:15px}.brand span{display:block;color:#b7c9da;font-size:12px;margin-top:5px;line-height:1.35}
+label{font-size:12px;font-weight:700;display:block;margin:8px 0 4px}
+input,select{width:100%;height:31px;border:1px solid #b8c2cc;border-radius:8px;padding:5px 8px;background:white}
+input[type=file]{color:#d7e7f5;background:transparent;border:0;padding:3px}
+button{border:0;border-radius:9px;background:var(--blue);color:white;font-weight:700;padding:9px 12px;cursor:pointer;margin:4px 3px 4px 0}
+button:hover{filter:brightness(1.07)}button.green{background:var(--green)}button.teal{background:var(--teal)}button.gray{background:#475569}button.red{background:var(--red)}
+.nav button{width:100%;text-align:left;background:transparent;color:#d7e7f5;margin:2px 0;padding:9px 10px}.nav button.active,.nav button:hover{background:rgba(255,255,255,.13)}
+main{padding:20px;overflow:auto}.top{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:14px}.status{font-size:12px;color:var(--muted)}
+.sec{display:none}.sec.active{display:block}.grid{display:grid;grid-template-columns:repeat(4,minmax(150px,1fr));gap:14px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(180px,1fr));gap:14px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 5px 14px rgba(12,42,70,.06);margin-bottom:14px}.card h3{margin:0 0 9px;color:var(--muted);font-size:13px}.big{font-size:30px;color:var(--blue2);font-weight:900}.small{font-size:12px;color:var(--muted);line-height:1.35}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}.search{max-width:340px}
+.tablewrap{max-height:560px;overflow:auto;background:white;border:1px solid var(--line);border-radius:14px}
+table{border-collapse:collapse;width:100%;font-size:12px}th{position:sticky;top:0;background:#173b5d;color:white;text-align:left;padding:8px;z-index:1;white-space:nowrap}td{border-bottom:1px solid #e5eaf0;padding:7px 8px;vertical-align:top}tr:hover td{background:#f7fbff}
+.badge{display:inline-block;border-radius:99px;padding:3px 8px;font-size:11px;font-weight:800}.g{background:#dcfce7;color:#166534}.a{background:#fef3c7;color:#92400e}.r{background:#fee2e2;color:#991b1b}.b{background:#dbeafe;color:#1e40af}.x{background:#f1f5f9;color:#475569}
+.notice{padding:12px;border-radius:12px;background:#fff7ed;color:#9a3412;border:1px solid #fed7aa;margin:10px 0;font-size:13px}.ok{background:#ecfdf5;color:#065f46;border-color:#a7f3d0}.info{background:#eff6ff;color:#1e3a8a;border-color:#bfdbfe}
+pre{background:#0d1b2a;color:#dbeafe;border-radius:14px;padding:14px;overflow:auto;font-size:12px;white-space:pre-wrap}
+.tree div{padding:6px 10px;border-bottom:1px solid #edf2f7;font-size:13px}.i0{font-weight:800}.i1{padding-left:26px!important}.i2{padding-left:48px!important}.i3{padding-left:70px!important}
+.barline{display:flex;align-items:center;gap:8px;margin:6px 0}.barline .lab{width:190px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px}.bar{height:14px;background:#e5e7eb;border-radius:99px;overflow:hidden;flex:1}.fill{height:100%;background:linear-gradient(90deg,#0f6b9e,#0e9f9a)}.val{width:70px;text-align:right;color:var(--muted);font-size:12px}
+.kpirow{display:flex;flex-wrap:wrap;gap:8px}.pill{background:#eef6ff;border:1px solid #cfe5ff;border-radius:99px;padding:6px 9px;font-size:12px}.svgchart{width:100%;height:320px;border:1px solid var(--line);border-radius:14px;background:white}.axis{stroke:#94a3b8;stroke-width:1}.gridline{stroke:#e2e8f0;stroke-width:1}.lineActual{fill:none;stroke:#0f6b9e;stroke-width:3}.linePlanned{fill:none;stroke:#0e9f9a;stroke-width:3}.lineForecast{fill:none;stroke:#b45309;stroke-width:3;stroke-dasharray:7 5}.dot{fill:#0f6b9e}.legend{font-size:12px;fill:#475569}.pass{color:#166534;font-weight:800}.warn{color:#92400e;font-weight:800}.fail{color:#991b1b;font-weight:800}
+@media(max-width:1100px){.app{grid-template-columns:1fr}.grid,.grid3,.grid2{grid-template-columns:1fr 1fr}}@media(max-width:700px){.grid,.grid3,.grid2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+<h1>AURORA XER Insight Free v0.4</h1>
+<p>Advanced read-only XER toolkit: schedule quality, logic, WBS, codes, UDFs, constraints, float, cost/resource, risk, comparison and reporting.</p>
+</header>
+<div class="app">
+<aside>
+ <div class="brand"><b>AURORA XER Toolkit</b><span>Free layer now includes deeper XER read/analysis. Premium layer should still keep writing/importing and P6/OPC/SYNCHRO automation.</span></div>
+ <div class="box">
+  <label>Current / update XER</label><input id="fileA" type="file" accept=".xer,.txt"/>
+  <label>Previous / baseline XER optional</label><input id="fileB" type="file" accept=".xer,.txt"/>
+  <button class="teal" onclick="loadFiles()">Analyze</button><button class="gray" onclick="resetAll()">Reset</button>
+ </div>
+ <div class="box">
+  <label>Long duration threshold days</label><input id="thrLong" type="number" value="20"/>
+  <label>Large float threshold hours</label><input id="thrFloat" type="number" value="320"/>
+  <label>Large date shift threshold days</label><input id="thrShift" type="number" value="5"/>
+  <label>Project health target minimum</label><input id="thrHealth" type="number" value="80"/>
+  <button onclick="reanalyze()">Apply Rules</button>
+ </div>
+ <div class="nav">
+  <button class="active" onclick="nav('dash',this)">Executive Dashboard</button>
+  <button onclick="nav('summary',this)">Executive Summary</button>
+  <button onclick="nav('viewer',this)">Schedule Viewer</button>
+  <button onclick="nav('quality',this)">Schedule Quality</button>
+  <button onclick="nav('dcma',this)">DCMA Lite</button>
+  <button onclick="nav('logic',this)">Logic Network</button>
+  <button onclick="nav('constraints',this)">Constraints / Float</button>
+  <button onclick="nav('codes',this)">Activity Codes</button>
+  <button onclick="nav('udf',this)">UDF Explorer</button>
+  <button onclick="nav('resources',this)">Resources / Cost</button>
+  <button onclick="nav('risk',this)">Risk Register</button>
+  <button onclick="nav('period',this)">Period Reporting</button>
+  <button onclick="nav('compare',this)">XER Comparison</button>
+  <button onclick="nav('evm',this)">EVM / S-Curves Lite</button>
+  <button onclick="nav('calendar',this)">Calendar Viewer</button>
+  <button onclick="nav('dashcreator',this)">Dashboard Creator</button>
+  <button onclick="nav('data',this)">Data Dictionary</button>
+  <button onclick="nav('raw',this)">Raw Tables</button>
+  <button onclick="nav('strategy',this)">Free vs Premium</button>
+ </div>
+</aside>
+<main>
+ <div class="top">
+  <div><b id="fileName">No XER loaded</b><div class="status" id="stat">Load a current XER. Add a previous XER to enable comparison.</div></div>
+  <div><button class="green" onclick="exportReport()">Export HTML Report</button><button onclick="exportCSV('activities')">Export Activities CSV</button><button onclick="exportCSV('warnings')">Export Warnings CSV</button></div>
+ </div>
 
-The HTML application file should be uploaded here:
-AURORA_XER_Insight_Free_v0_4.html
+ <section id="dash" class="sec active">
+  <div class="grid">
+   <div class="card"><h3>Projects</h3><div class="big" id="mProj">0</div></div>
+   <div class="card"><h3>Activities</h3><div class="big" id="mTask">0</div></div>
+   <div class="card"><h3>Relationships</h3><div class="big" id="mRel">0</div></div>
+   <div class="card"><h3>Health Score</h3><div class="big" id="mHealth">--</div><div class="small" id="healthText"></div></div>
+  </div>
+  <div class="grid">
+   <div class="card"><h3>Open Ends</h3><div class="big" id="mOpen">0</div></div>
+   <div class="card"><h3>Long Durations</h3><div class="big" id="mLong">0</div></div>
+   <div class="card"><h3>Constraints</h3><div class="big" id="mCons">0</div></div>
+   <div class="card"><h3>Unresourced Activities</h3><div class="big" id="mUnres">0</div></div>
+  </div>
+  <div class="grid2">
+   <div class="card"><h3>Status Distribution</h3><div id="statusBars"></div></div>
+   <div class="card"><h3>Top WBS by Activity Count</h3><div id="wbsBars"></div></div>
+  </div>
+  <div class="notice ok">This is read-only. It parses XER locally in the browser. It does not modify Primavera data or generate importable XER.</div>
+ </section>
 
-This folder contains the free read-only XER analysis toolkit package documentation.
+ <section id="summary" class="sec">
+  <h2>Executive Summary</h2>
+  <div class="notice info">Free version uses rule-based text generation. Real AI/API narrative, multi-project server storage and branded PDF automation should remain premium.</div>
+  <pre id="execSummary">No file loaded.</pre>
+ </section>
+
+ <section id="viewer" class="sec">
+  <h2>Schedule Viewer</h2>
+  <div class="toolbar"><input class="search" id="taskSearch" oninput="renderViewer()" placeholder="Filter activities, WBS, status, code..."/><select id="statusFilter" onchange="renderViewer()"><option value="">All status</option></select><select id="wbsFilter" onchange="renderViewer()"><option value="">All WBS</option></select><button onclick="exportCSV('activities')">Export CSV</button></div>
+  <div class="grid2">
+   <div class="card"><h3>WBS Tree</h3><div class="tree" id="wbsTree">No WBS.</div></div>
+   <div class="card"><h3>Activity Count by WBS</h3><div id="wbsFullBars"></div></div>
+  </div>
+  <div class="tablewrap"><table id="taskTable"></table></div>
+ </section>
+
+ <section id="quality" class="sec">
+  <h2>Schedule Quality</h2>
+  <div class="grid">
+   <div class="card"><h3>Missing Predecessor</h3><div class="big" id="qNoPred">0</div></div>
+   <div class="card"><h3>Missing Successor</h3><div class="big" id="qNoSucc">0</div></div>
+   <div class="card"><h3>Non-zero / Negative Lag</h3><div class="big" id="qLag">0</div></div>
+   <div class="card"><h3>Date / Status Issues</h3><div class="big" id="qDate">0</div></div>
+  </div>
+  <div class="toolbar"><select id="warnFilter" onchange="renderQuality()"><option value="">All warnings</option><option>red</option><option>amber</option><option>blue</option></select><button onclick="exportCSV('warnings')">Export Warnings</button></div>
+  <div class="tablewrap"><table id="qualityTable"></table></div>
+ </section>
+
+ <section id="dcma" class="sec">
+  <h2>DCMA 14-Point Advanced Lite</h2>
+  <div class="notice">Read-only advanced approximation from XER data. It is not a certified government DCMA audit, but it gives a strong first-pass professional quality screen.</div>
+  <div class="grid">
+    <div class="card"><h3>Overall DCMA Lite Score</h3><div class="big" id="dScore">--</div><div class="small">weighted 14-point approximation</div></div>
+    <div class="card"><h3>Failed Checks</h3><div class="big" id="dFail">0</div><div class="small">checks above threshold</div></div>
+    <div class="card"><h3>Warning Checks</h3><div class="big" id="dWarn">0</div><div class="small">review recommended</div></div>
+    <div class="card"><h3>Passed Checks</h3><div class="big" id="dPass">0</div><div class="small">within threshold</div></div>
+  </div>
+  <div class="grid2">
+    <div class="card"><h3>DCMA Lite Health Bars</h3><div id="dcmaBars"></div></div>
+    <div class="card"><h3>Audit Interpretation</h3><pre id="dcmaNarrative">No file loaded.</pre></div>
+  </div>
+  <div class="tablewrap"><table id="dcmaTable"></table></div>
+ </section>
+
+ <section id="logic" class="sec">
+  <h2>Logic Network</h2>
+  <div class="grid">
+   <div class="card"><h3>FS</h3><div class="big" id="lFS">0</div></div>
+   <div class="card"><h3>SS</h3><div class="big" id="lSS">0</div></div>
+   <div class="card"><h3>FF</h3><div class="big" id="lFF">0</div></div>
+   <div class="card"><h3>SF / Other</h3><div class="big" id="lOther">0</div></div>
+  </div>
+  <div class="grid2">
+    <div class="card"><h3>Relationship Type Distribution</h3><div id="relBars"></div></div>
+    <div class="card"><h3>Top Activities by Link Count</h3><div id="linkBars"></div></div>
+  </div>
+  <div class="tablewrap"><table id="logicTable"></table></div>
+ </section>
+
+ <section id="constraints" class="sec">
+  <h2>Constraints / Float / Criticality</h2>
+  <div class="grid">
+   <div class="card"><h3>Constrained Activities</h3><div class="big" id="cfCons">0</div></div>
+   <div class="card"><h3>Critical Activities</h3><div class="big" id="cfCrit">0</div></div>
+   <div class="card"><h3>High Float</h3><div class="big" id="cfFloat">0</div></div>
+   <div class="card"><h3>Milestones</h3><div class="big" id="cfMile">0</div></div>
+  </div>
+  <div class="tablewrap"><table id="constraintTable"></table></div>
+ </section>
+
+ <section id="codes" class="sec">
+  <h2>Activity Codes</h2>
+  <div class="grid">
+    <div class="card"><h3>Code Types</h3><div class="big" id="acTypes">0</div></div>
+    <div class="card"><h3>Code Values</h3><div class="big" id="acValues">0</div></div>
+    <div class="card"><h3>Code Assignments</h3><div class="big" id="acAssign">0</div></div>
+    <div class="card"><h3>Coded Activities</h3><div class="big" id="acTask">0</div></div>
+  </div>
+  <div class="grid2">
+   <div class="card"><h3>Code Type Distribution</h3><div id="codeBars"></div></div>
+   <div class="card"><h3>Missing Codes Check</h3><div id="codeMissingBars"></div></div>
+  </div>
+  <div class="tablewrap"><table id="codesTable"></table></div>
+ </section>
+
+ <section id="udf" class="sec">
+  <h2>UDF Explorer</h2>
+  <div class="grid">
+   <div class="card"><h3>UDF Types</h3><div class="big" id="uTypes">0</div></div>
+   <div class="card"><h3>UDF Values</h3><div class="big" id="uValues">0</div></div>
+   <div class="card"><h3>Task UDF Values</h3><div class="big" id="uTask">0</div></div>
+   <div class="card"><h3>Resource UDF Values</h3><div class="big" id="uRsrc">0</div></div>
+  </div>
+  <div class="tablewrap"><table id="udfTable"></table></div>
+ </section>
+
+ <section id="resources" class="sec">
+  <h2>Resources / Assignments / Cost</h2>
+  <div class="grid">
+   <div class="card"><h3>Resources</h3><div class="big" id="rCount">0</div></div>
+   <div class="card"><h3>Assignments</h3><div class="big" id="raCount">0</div></div>
+   <div class="card"><h3>Activities With Resources</h3><div class="big" id="rTaskCount">0</div></div>
+   <div class="card"><h3>Planned Cost Sum</h3><div class="big" id="rCost">0</div></div>
+  </div>
+  <div class="grid2">
+    <div class="card"><h3>Resource Type Distribution</h3><div id="resTypeBars"></div></div>
+    <div class="card"><h3>Top Resource Assignment Counts</h3><div id="resAssignBars"></div></div>
+  </div>
+  <div class="tablewrap"><table id="resourcesTable"></table></div>
+ </section>
+
+ <section id="risk" class="sec">
+  <h2>Auto Risk Register</h2>
+  <div class="notice">Risks are generated from schedule symptoms: open ends, long duration, large float, constraints, lags, missing resources and date/status mismatch.</div>
+  <div class="tablewrap"><table id="riskTable"></table></div>
+ </section>
+
+ <section id="period" class="sec">
+  <h2>Period Reporting</h2>
+  <div class="grid2">
+    <div class="card"><h3>Monthly Start Trend</h3><div id="periodBars"></div></div>
+    <div class="card"><h3>Monthly Finish Trend</h3><div id="finishBars"></div></div>
+  </div>
+  <div class="tablewrap"><table id="periodTable"></table></div>
+ </section>
+
+ <section id="compare" class="sec">
+  <h2>XER Comparison / Progress Update Analysis</h2>
+  <div class="notice">Load previous XER as second file. Comparison checks added/deleted/changed activities and logic changes.</div>
+  <div class="grid">
+   <div class="card"><h3>Added Activities</h3><div class="big" id="cAdded">0</div></div>
+   <div class="card"><h3>Deleted Activities</h3><div class="big" id="cDeleted">0</div></div>
+   <div class="card"><h3>Changed Fields</h3><div class="big" id="cChanged">0</div></div>
+   <div class="card"><h3>Logic Changes</h3><div class="big" id="cLogic">0</div></div>
+  </div>
+  <div class="tablewrap"><table id="compareTable"></table></div>
+ </section>
+
+ <section id="evm" class="sec">
+  <h2>Advanced S-Curve Lite / EVM Readiness</h2>
+  <div class="notice">Advanced read-only curve engine from XER dates, activity status and assignment cost fields. It produces activity-count and cost-lite curves. Full time-phased PV/EV/AC spread from Primavera spread tables remains premium.</div>
+  <div class="grid">
+   <div class="card"><h3>Baseline Fields</h3><div class="big" id="eBase">--</div></div>
+   <div class="card"><h3>Actual Fields</h3><div class="big" id="eActual">--</div></div>
+   <div class="card"><h3>Cost Fields</h3><div class="big" id="eCost">--</div></div>
+   <div class="card"><h3>SPI Lite</h3><div class="big" id="eSpi">--</div><div class="small">EV/PV approximation</div></div>
+  </div>
+  <div class="grid">
+   <div class="card"><h3>PV Lite</h3><div class="big" id="ePv">0</div></div>
+   <div class="card"><h3>EV Lite</h3><div class="big" id="eEv">0</div></div>
+   <div class="card"><h3>AC Lite</h3><div class="big" id="eAc">0</div></div>
+   <div class="card"><h3>Variance Lite</h3><div class="big" id="eVar">0</div></div>
+  </div>
+  <div class="card"><h3>Cumulative Activity S-Curve</h3><div id="sCurveSvg" class="svgchart"></div></div>
+  <div class="grid2">
+    <div class="card"><h3>Monthly Planned / Actual / Completed</h3><div id="sCurveTableWrap" class="tablewrap"><table id="sCurveDetailTable"></table></div></div>
+    <div class="card"><h3>Resource/Cost Lite Curve</h3><div id="costCurveSvg" class="svgchart"></div></div>
+  </div>
+ </section>
+
+ <section id="calendar" class="sec">
+  <h2>Calendar Viewer</h2>
+  <div class="tablewrap"><table id="calTable"></table></div>
+ </section>
+
+ <section id="dashcreator" class="sec">
+  <h2>Dashboard Creator</h2>
+  <div class="toolbar">
+   <select id="dashDim" onchange="renderCustomDash()"><option value="status">Status</option><option value="wbs">WBS</option><option value="month">Start Month</option><option value="calendar">Calendar</option><option value="constraint">Constraint</option><option value="code">Activity Code</option></select>
+   <select id="dashMetric" onchange="renderCustomDash()"><option value="count">Activity Count</option><option value="duration">Total Duration Hours</option><option value="cost">Assignment Planned Cost</option></select>
+  </div>
+  <div class="card"><h3>Custom Dashboard</h3><div id="customDash"></div></div>
+ </section>
+
+ <section id="data" class="sec">
+  <h2>Data Dictionary / XER Table Coverage</h2>
+  <div class="grid3" id="tableCoverage"></div>
+  <div class="tablewrap"><table id="dictTable"></table></div>
+ </section>
+
+ <section id="raw" class="sec">
+  <h2>Raw XER Tables</h2>
+  <div class="toolbar"><select id="rawSel" onchange="renderRaw()"></select><input class="search" id="rawSearch" oninput="renderRaw()" placeholder="Search selected raw table..."/><button onclick="exportCSV('raw')">Export Selected CSV</button></div>
+  <div class="tablewrap"><table id="rawTable"></table></div>
+ </section>
+
+ <section id="strategy" class="sec">
+  <h2>Free vs Premium Strategy</h2>
+  <div class="card">
+   <p><b>Free can be generous because it is read-only:</b> viewer, deeper tables, quality checks, codes, UDFs, constraints, resources/cost summaries, comparison, dashboards, exports.</p>
+   <p><b>Premium AURORA should keep:</b> XER writer/import validator, P6 API push/pull, OPC REST, SYNCHRO 4D automation, Power BI model generation, full time-phased EV/PV/AC and multi-project/server/AI workflows.</p>
+  </div>
+ </section>
+</main>
+</div>
+
+<script>
+let A=emptyModel(), B=emptyModel(), comparison={rows:[],added:0,deleted:0,changed:0,logic:0};
+const tableAliases={PROJECT:["PROJECT"],WBS:["PROJWBS"],TASK:["TASK"],REL:["TASKPRED"],RSRC:["RSRC"],ASSIGN:["TASKRSRC"],CAL:["CALENDAR"],ACTVTYPE:["ACTVTYPE"],ACTVCODE:["ACTVCODE"],TASKACTV:["TASKACTV"],UDFTYPE:["UDFTYPE"],UDFVALUE:["UDFVALUE"],OBS:["OBS"],RSRCRATE:["RSRCRATE"],ROLE:["ROLE"],RSRCROLE:["RSRCROLE"],COST:["COSTACT","COST_ACCOUNT","COSTTYPE"],PROJCOST:["PROJCOST"]};
+function emptyModel(){return {name:"",tables:{},fields:{},projects:[],wbs:[],tasks:[],rels:[],resources:[],assignments:[],calendars:[],actvTypes:[],actvCodes:[],taskActv:[],udfTypes:[],udfValues:[],obs:[],roles:[],rsrcRoles:[],warnings:[],risks:[],metrics:{},maps:{}}}
+function nav(id,b){document.querySelectorAll(".sec").forEach(s=>s.classList.remove("active"));document.getElementById(id).classList.add("active");document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));b.classList.add("active")}
+async function loadFiles(){const fa=document.getElementById("fileA").files[0];if(!fa){alert("Select current XER first.");return}A=parse(await fa.text(),fa.name);analyze(A);const fb=document.getElementById("fileB").files[0];if(fb){B=parse(await fb.text(),fb.name);analyze(B);compareModels(A,B)}else{B=emptyModel();comparison={rows:[],added:0,deleted:0,changed:0,logic:0}}renderAll();set("fileName",A.name+(B.name?" | Compared with "+B.name:""));set("stat","Analysis completed. Tables parsed: "+Object.keys(A.tables).length+(B.name?" | comparison enabled":""))}
+function resetAll(){A=emptyModel();B=emptyModel();comparison={rows:[],added:0,deleted:0,changed:0,logic:0};renderAll();set("fileName","No XER loaded");set("stat","Load a current XER. Add a previous XER to enable comparison.")}
+function reanalyze(){if(!A.name){alert("Load XER first.");return}analyze(A);if(B.name){analyze(B);compareModels(A,B)}renderAll()}
+function parse(text,name){const m=emptyModel();m.name=name;let cur="",fields=[];for(const line of text.split(/\r?\n/)){if(!line)continue;const p=line.split("\t");if(p[0]==="%T"){cur=p[1];m.tables[cur]=m.tables[cur]||[]}else if(p[0]==="%F"&&cur){fields=p.slice(1);m.fields[cur]=fields}else if(p[0]==="%R"&&cur){const o={};(m.fields[cur]||fields).forEach((f,i)=>o[f]=p[i+1]??"");m.tables[cur].push(o)}}return m}
+function rows(m,key){for(const n of tableAliases[key]||[key])if(m.tables[n])return m.tables[n];return[]}function v(o,ks){for(const k of ks)if(o&&o[k]!=null&&o[k]!=="")return o[k];return""}function num(x){const p=parseFloat(x);return isNaN(p)?0:p}
+function idTask(o){return v(o,["task_id","task_code"])}function taskName(o){return v(o,["task_name","name"])}function dt(o,ks){return v(o,ks).slice(0,10)}
+function analyze(m){
+ m.projects=rows(m,"PROJECT");m.wbs=rows(m,"WBS");m.tasks=rows(m,"TASK");m.rels=rows(m,"REL");m.resources=rows(m,"RSRC");m.assignments=rows(m,"ASSIGN");m.calendars=rows(m,"CAL");m.actvTypes=rows(m,"ACTVTYPE");m.actvCodes=rows(m,"ACTVCODE");m.taskActv=rows(m,"TASKACTV");m.udfTypes=rows(m,"UDFTYPE");m.udfValues=rows(m,"UDFVALUE");m.obs=rows(m,"OBS");m.roles=rows(m,"ROLE");m.rsrcRoles=rows(m,"RSRCROLE");
+ buildMaps(m);quality(m);risk(m);
+}
+function buildMaps(m){
+ const wbsName={}, taskById={}, resName={}, codeName={}, codeTypeName={}, udfName={};
+ m.wbs.forEach(x=>wbsName[v(x,["wbs_id"])]=(v(x,["wbs_short_name","wbs_code"])+" "+v(x,["wbs_name"])).trim());
+ m.tasks.forEach(x=>taskById[idTask(x)]=x);
+ m.resources.forEach(x=>resName[v(x,["rsrc_id"])]=(v(x,["rsrc_short_name"])+" "+v(x,["rsrc_name"])).trim());
+ m.actvTypes.forEach(x=>codeTypeName[v(x,["actv_code_type_id"])]=v(x,["actv_code_type","actv_code_type_name","actv_code_type_short_name"]));
+ m.actvCodes.forEach(x=>codeName[v(x,["actv_code_id"])]=v(x,["actv_code_name","actv_code_short_name","short_name"]));
+ m.udfTypes.forEach(x=>udfName[v(x,["udf_type_id"])]=v(x,["udf_type_label","udf_type_name","udf_name"]));
+ m.maps={wbsName,taskById,resName,codeName,codeTypeName,udfName};
+}
+function quality(m){
+ const pred={},succ={},relKeys=new Set(),relTypes={};let lag=0,lead=0,dateIssues=0,long=0,constraints=0,crit=0,highFloat=0,milestones=0; const longH=(+el("thrLong").value||20)*8, floatH=(+el("thrFloat").value||320);
+ for(const r of m.rels){const p=v(r,["pred_task_id","pred_task_code"]), s=v(r,["task_id","succ_task_id","succ_task_code"]);if(p)succ[p]=(succ[p]||0)+1;if(s)pred[s]=(pred[s]||0)+1;const typ=v(r,["pred_type","pred_relation_type","rel_type"])||"UNKNOWN";relTypes[typ]=(relTypes[typ]||0)+1;const l=num(v(r,["lag_hr_cnt","lag_drtn_hr_cnt","lag"]));if(l!==0)lag++;if(l<0)lead++;relKeys.add([p,s,typ,l].join("|"))}
+ const assignTasks=new Set(m.assignments.map(a=>v(a,["task_id","task_code"])).filter(Boolean)); const warn=[];
+ for(const x of m.tasks){const id=idTask(x), nm=taskName(x), dur=num(v(x,["target_drtn_hr_cnt","orig_drtn_hr_cnt","remain_drtn_hr_cnt"]));const fl=num(v(x,["total_float_hr_cnt","free_float_hr_cnt","float_path_order"]));const ct=v(x,["cstr_type","constraint_type","primary_constraint_type"]);const st=v(x,["status_code","task_status"]);const type=v(x,["task_type","task_type_code","milestone_flag"]);
+   if(id&&!pred[id])warn.push(w("Missing predecessor","amber",id,nm,"No predecessor found.")); if(id&&!succ[id])warn.push(w("Missing successor","amber",id,nm,"No successor found."));
+   if(dur>longH){long++;warn.push(w("Long duration","amber",id,nm,"Duration exceeds threshold."))}
+   if(fl>floatH){highFloat++;warn.push(w("High float","blue",id,nm,"Float exceeds threshold."))}
+   if(ct){constraints++;warn.push(w("Constraint","amber",id,nm,"Constraint value: "+ct))}
+   if(/crit|yes|Y/i.test(v(x,["critical_flag","critical_path_flag"]))){crit++}
+   if(/mile|start milestone|finish milestone/i.test(type)){milestones++}
+   if(/not|notstart/i.test(st)&&(v(x,["act_start_date"])||v(x,["act_end_date"]))){dateIssues++;warn.push(w("Status/date mismatch","red",id,nm,"Actual dates exist on not-started-looking activity."))}
+   const sdate=Date.parse(dt(x,["start_date","target_start_date","early_start_date"])); const fdate=Date.parse(dt(x,["end_date","target_end_date","early_end_date"])); if(sdate&&fdate&&fdate<sdate){dateIssues++;warn.push(w("Finish before start","red",id,nm,"Finish date is earlier than start date."))}
+ }
+ const open=warn.filter(x=>/Missing/.test(x.type)).length, unres=Math.max(0,m.tasks.length-assignTasks.size), nTasks=Math.max(1,m.tasks.length), nRels=Math.max(1,m.rels.length);
+ let pen=0;pen+=Math.min(30,Math.round(open/Math.max(1,nTasks*2)*100));pen+=Math.min(15,Math.round(long/nTasks*100));pen+=Math.min(15,Math.round(lag/nRels*100));pen+=Math.min(15,Math.round(constraints/nTasks*100));pen+=Math.min(10,Math.round(highFloat/nTasks*100));
+ const health=Math.max(0,100-pen);m.warnings=warn;m.metrics={pred,succ,relTypes,lag,lead,long,dateIssues,open,unres,assignTasks,relKeys,health,constraints,crit,highFloat,milestones};
+}
+function risk(m){
+ const risks=[]; for(const warn of m.warnings){let impact="Medium",prob="Medium",score=6;if(warn.severity==="red"){impact="High";prob="High";score=9}else if(warn.type==="Missing predecessor"||warn.type==="Missing successor"){impact="High";prob="Medium";score=8}else if(warn.type==="Constraint"){impact="Medium";prob="Medium";score=6}
+ risks.push({RiskID:"R-"+String(risks.length+1).padStart(3,"0"),ActivityID:warn.activity,Risk:warn.type,Impact:impact,Probability:prob,Score:score,RecommendedAction:actionFor(warn.type),Detail:warn.detail});}
+ m.risks=risks.sort((a,b)=>b.Score-a.Score);
+}
+function actionFor(t){if(/Missing/.test(t))return"Review CPM logic and add justified predecessor/successor.";if(/Long/.test(t))return"Split activity or justify duration in schedule narrative.";if(/Constraint/.test(t))return"Review constraint necessity and replace with logic where possible.";if(/float/i.test(t))return"Review logic path and float reason.";if(/date/i.test(t))return"Correct status/date fields.";return"Review and document."}
+function w(type,severity,activity,name,detail){return{severity,type,activity,name,detail}}
+function compareModels(a,b){const ma=new Map(a.tasks.map(x=>[idTask(x),x]).filter(x=>x[0])), mb=new Map(b.tasks.map(x=>[idTask(x),x]).filter(x=>x[0]));const rows=[];let added=0,deleted=0,changed=0;const watch=["task_name","status_code","target_drtn_hr_cnt","remain_drtn_hr_cnt","total_float_hr_cnt","start_date","end_date","target_start_date","target_end_date","act_start_date","act_end_date"];for(const [id,ta] of ma){const tb=mb.get(id);if(!tb){added++;rows.push({Change:"Added",ActivityID:id,Field:"Activity",Previous:"",Current:taskName(ta)})}else{watch.forEach(f=>{if((tb[f]||"")!=(ta[f]||"")){changed++;rows.push({Change:"Changed",ActivityID:id,Field:f,Previous:tb[f]||"",Current:ta[f]||""})}})}}for(const [id,tb] of mb){if(!ma.has(id)){deleted++;rows.push({Change:"Deleted",ActivityID:id,Field:"Activity",Previous:taskName(tb),Current:""})}}let logic=0;for(const k of a.metrics.relKeys)if(!b.metrics.relKeys.has(k))logic++;for(const k of b.metrics.relKeys)if(!a.metrics.relKeys.has(k))logic++;comparison={rows,added,deleted,changed,logic}}
+function renderAll(){renderMetrics();renderSummary();renderViewer();renderQuality();renderDcma();renderLogic();renderConstraints();renderCodes();renderUdf();renderResources();renderRisk();renderPeriod();renderCompare();renderEvm();renderCalendar();renderCustomDash();renderDataDict();renderRawSel()}
+function renderMetrics(){set("mProj",A.projects.length);set("mTask",A.tasks.length);set("mRel",A.rels.length);set("mHealth",A.name?A.metrics.health:"--");set("mOpen",A.metrics.open||0);set("mLong",A.metrics.long||0);set("mCons",A.metrics.constraints||0);set("mUnres",A.metrics.unres||0);set("healthText",A.name?(A.metrics.health>=+el("thrHealth").value?"Target met":"Below target"):"");bars("statusBars",group(A.tasks,x=>v(x,["status_code","task_status"])||"(blank)"));bars("wbsBars",topObj(group(A.tasks,x=>A.maps.wbsName[v(x,["wbs_id"])]||v(x,["wbs_id"])||"(blank)"),10));}
+function renderSummary(){if(!A.name){setHtml("execSummary","No file loaded.");return}let lines=[];lines.push("EXECUTIVE SUMMARY");lines.push("=================");lines.push("File: "+A.name);lines.push("Projects: "+A.projects.length+" | WBS nodes: "+A.wbs.length+" | Activities: "+A.tasks.length+" | Relationships: "+A.rels.length);lines.push("Resources: "+A.resources.length+" | Resource assignments: "+A.assignments.length+" | Calendars: "+A.calendars.length);lines.push("Activity code types: "+A.actvTypes.length+" | code values: "+A.actvCodes.length+" | code assignments: "+A.taskActv.length);lines.push("UDF types: "+A.udfTypes.length+" | UDF values: "+A.udfValues.length);lines.push("");lines.push("Health score: "+(A.name?A.metrics.health:"--"));lines.push("Open-end warnings: "+A.metrics.open+", long durations: "+A.metrics.long+", constraints: "+A.metrics.constraints+", high float: "+A.metrics.highFloat+", lag/lead issues: "+A.metrics.lag+"/"+A.metrics.lead+".");lines.push("Unresourced activities: "+A.metrics.unres+". Critical activities detected: "+A.metrics.crit+". Milestones detected: "+A.metrics.milestones+".");if(B.name){lines.push("");lines.push("COMPARISON");lines.push("Previous file: "+B.name);lines.push("Added: "+comparison.added+", deleted: "+comparison.deleted+", changed fields: "+comparison.changed+", logic changes: "+comparison.logic+".")}lines.push("");lines.push("Recommended actions:");if(A.metrics.open)lines.push("- Fix or justify missing predecessor/successor logic.");if(A.metrics.constraints)lines.push("- Review hard/soft constraints and replace with logic where possible.");if(A.metrics.highFloat)lines.push("- Review high-float activities for weak logic.");if(A.metrics.lag)lines.push("- Review lags/leads and document rationale.");if(A.metrics.unres)lines.push("- Review resource/cost loading if EVM or S-curve reporting is required.");if(!A.metrics.open&&!A.metrics.constraints&&!A.metrics.highFloat&&!A.metrics.lag)lines.push("- Basic rule set did not detect major quality issues.");setHtml("execSummary",esc(lines.join("\n")))}
+function taskRow(x){const id=idTask(x), wbs=v(x,["wbs_id"]);return{ActivityID:id,Name:taskName(x),WBS:A.maps.wbsName[wbs]||wbs,Status:v(x,["status_code","task_status"]),Type:v(x,["task_type","task_type_code"]),Start:dt(x,["start_date","target_start_date","early_start_date","act_start_date"]),Finish:dt(x,["end_date","target_end_date","early_end_date","act_end_date"]),DurationHours:v(x,["target_drtn_hr_cnt","orig_drtn_hr_cnt","remain_drtn_hr_cnt"]),Float:v(x,["total_float_hr_cnt","free_float_hr_cnt"]),Constraint:v(x,["cstr_type","constraint_type","primary_constraint_type"]),Pred:(A.metrics.pred||{})[id]||0,Succ:(A.metrics.succ||{})[id]||0}}
+function renderViewer(){const statuses=[...new Set(A.tasks.map(x=>v(x,["status_code","task_status"])).filter(Boolean))].sort(), sf=el("statusFilter"), oldS=sf.value;sf.innerHTML='<option value="">All status</option>'+statuses.map(s=>`<option>${esc(s)}</option>`).join("");sf.value=oldS;const wbsVals=[...new Set(A.tasks.map(x=>v(x,["wbs_id"])).filter(Boolean))].sort(), wf=el("wbsFilter"), oldW=wf.value;wf.innerHTML='<option value="">All WBS</option>'+wbsVals.map(s=>`<option value="${esc(s)}">${esc(A.maps.wbsName[s]||s)}</option>`).join("");wf.value=oldW;const q=(el("taskSearch").value||"").toLowerCase(), st=sf.value, wb=wf.value;let data=A.tasks.map(taskRow);if(q)data=data.filter(r=>Object.values(r).join(" ").toLowerCase().includes(q));if(st)data=data.filter(r=>r.Status===st);if(wb)data=data.filter(r=>r.WBS.includes(wb)||r.WBS===(A.maps.wbsName[wb]||wb));table("taskTable",data,["ActivityID","Name","WBS","Status","Type","Start","Finish","DurationHours","Float","Constraint","Pred","Succ"],1500);renderWbs();bars("wbsFullBars",topObj(group(A.tasks,x=>A.maps.wbsName[v(x,["wbs_id"])]||v(x,["wbs_id"])||"(blank)"),25))}
+function renderWbs(){const e=el("wbsTree");if(!A.wbs.length){e.innerHTML="No WBS.";return}const by={};A.wbs.forEach(x=>{const p=v(x,["parent_wbs_id","parent_id"]);(by[p]=by[p]||[]).push(x)});function node(x,l){const id=v(x,["wbs_id"]), c=v(x,["wbs_short_name","wbs_code"]), nm=v(x,["wbs_name"]);return `<div class="i${Math.min(l,3)}">${esc(c)} — ${esc(nm)}</div>`+(by[id]||[]).map(y=>node(y,l+1)).join("")}const roots=A.wbs.filter(x=>!v(x,["parent_wbs_id","parent_id"]));e.innerHTML=(roots.length?roots:A.wbs.slice(0,100)).map(x=>node(x,0)).join("")}
+function renderQuality(){set("qNoPred",A.tasks.filter(x=>!A.metrics.pred[idTask(x)]).length);set("qNoSucc",A.tasks.filter(x=>!A.metrics.succ[idTask(x)]).length);set("qLag",A.metrics.lag||0);set("qDate",A.metrics.dateIssues||0);const f=el("warnFilter").value;let d=A.warnings;if(f)d=d.filter(x=>x.severity===f);table("qualityTable",d,["severity","type","activity","name","detail"],1500)}
+function renderDcma(){
+ const nT=Math.max(1,A.tasks.length), nR=Math.max(1,A.rels.length);
+ const noPred=A.tasks.filter(x=>!A.metrics.pred[idTask(x)]).length;
+ const noSucc=A.tasks.filter(x=>!A.metrics.succ[idTask(x)]).length;
+ const missingLogic=Math.round(((noPred+noSucc)/Math.max(1,nT*2))*100);
+ const openRatio=missingLogic;
+ const lagRatio=Math.round((A.metrics.lag||0)/nR*100);
+ const leadRatio=Math.round((A.metrics.lead||0)/nR*100);
+ const floatRatio=Math.round((A.metrics.highFloat||0)/nT*100);
+ const consRatio=Math.round((A.metrics.constraints||0)/nT*100);
+ const longRatio=Math.round((A.metrics.long||0)/nT*100);
+ const relDensity=Math.round(nR/nT*100)/100;
+ const noResRatio=Math.round((A.metrics.unres||0)/nT*100);
+ const critRatio=Math.round((A.metrics.crit||0)/nT*100);
+ const invalidDateRatio=Math.round((A.metrics.dateIssues||0)/nT*100);
+ const statusBlank=Math.round(A.tasks.filter(x=>!v(x,["status_code","task_status"])).length/nT*100);
+ const calBlank=Math.round(A.tasks.filter(x=>!v(x,["clndr_id"])).length/nT*100);
+ const actCodeCoverage=Math.round((new Set(A.taskActv.map(x=>v(x,["task_id","task_code"])).filter(Boolean)).size)/nT*100);
+ const udfCoverage=Math.round((new Set(A.udfValues.map(x=>v(x,["fk_id","task_id"])).filter(Boolean)).size)/nT*100);
+
+ function row(check,metric,target,pass,warn,why){
+   let result = pass ? "PASS" : (warn ? "WARN" : "FAIL");
+   return {Check:check,Metric:metric,Target:target,Result:result,Interpretation:why};
+ }
+ const rows=[
+   row("1. Logic completeness",openRatio+"% open-end ratio","<= 5%",openRatio<=5,openRatio<=10,"Missing predecessor/successor weakens CPM integrity."),
+   row("2. Relationship density",relDensity+" rel/activity",">= 1.0",relDensity>=1,relDensity>=0.7,"Low density may indicate weak logic network."),
+   row("3. Leads / negative lags",leadRatio+"%","0%",leadRatio===0,leadRatio<=2,"Leads are generally discouraged and should be justified."),
+   row("4. Lags",lagRatio+"%","<= 5%",lagRatio<=5,lagRatio<=10,"Excessive lags reduce schedule transparency."),
+   row("5. Hard/soft constraints",consRatio+"%","<= 5%",consRatio<=5,consRatio<=10,"Constraints should be minimized and logic should drive the plan."),
+   row("6. High float",floatRatio+"%","<= 5%",floatRatio<=5,floatRatio<=15,"High float can indicate missing or weak logic."),
+   row("7. Long duration",longRatio+"%","<= 5%",longRatio<=5,longRatio<=15,"Long activities should be split or justified."),
+   row("8. Invalid date/status",invalidDateRatio+"%","0%",invalidDateRatio===0,invalidDateRatio<=2,"Status/date mismatch should be corrected before reporting."),
+   row("9. Resource loading",noResRatio+"% unresourced","project dependent",noResRatio<=20,noResRatio<=50,"High unresourced ratio limits EVM/S-curve reliability."),
+   row("10. Critical path presence",critRatio+"% critical","review",critRatio>0,critRatio===0,"No critical activities detected from available XER fields."),
+   row("11. Calendar assignment",calBlank+"% blank","<= 5%",calBlank<=5,calBlank<=15,"Missing calendars reduce schedule calculation reliability."),
+   row("12. Status completeness",statusBlank+"% blank","0%",statusBlank===0,statusBlank<=5,"Blank status codes weaken update reporting."),
+   row("13. Activity code coverage",actCodeCoverage+"% coded","project dependent",actCodeCoverage>=60,actCodeCoverage>=30,"Codes improve reporting by area, phase, system or contractor."),
+   row("14. UDF coverage",udfCoverage+"% with UDF","project dependent",udfCoverage>=30,udfCoverage>=10,"UDFs support advanced analytics and integration mapping.")
+ ];
+ const pass=rows.filter(r=>r.Result==="PASS").length, warn=rows.filter(r=>r.Result==="WARN").length, fail=rows.filter(r=>r.Result==="FAIL").length;
+ const score=Math.max(0,Math.round((pass*100 + warn*55)/14));
+ set("dScore",A.name?score:"--");set("dPass",pass);set("dWarn",warn);set("dFail",fail);
+ bars("dcmaBars",Object.fromEntries(rows.map(r=>[r.Check.replace(/^\d+\.\s*/,""), r.Result==="PASS"?100:r.Result==="WARN"?55:20])));
+ const narrative=[
+   "DCMA ADVANCED LITE INTERPRETATION",
+   "=================================",
+   "Overall score: "+score+"/100",
+   "Passed: "+pass+" | Warnings: "+warn+" | Failed: "+fail,
+   "",
+   fail ? "Priority: resolve failed checks before presenting the schedule as reliable." : "No hard failure in the Lite check set.",
+   warn ? "Review warning checks and document any project-specific exceptions." : "Warning count is low.",
+   "This check is calculated from available XER fields only and should be treated as a first-pass diagnostic."
+ ].join("\n");
+ setHtml("dcmaNarrative",esc(narrative));
+ table("dcmaTable",rows,["Check","Metric","Target","Result","Interpretation"]);
+}
+function renderLogic(){const rt=A.metrics.relTypes||{};set("lFS",rt.FS||rt.PR_FS||0);set("lSS",rt.SS||rt.PR_SS||0);set("lFF",rt.FF||rt.PR_FF||0);const known=(rt.FS||0)+(rt.SS||0)+(rt.FF||0)+(rt.PR_FS||0)+(rt.PR_SS||0)+(rt.PR_FF||0);set("lOther",Math.max(0,A.rels.length-known));bars("relBars",rt);const link={};A.tasks.forEach(x=>{const id=idTask(x);link[id]=(A.metrics.pred[id]||0)+(A.metrics.succ[id]||0)});bars("linkBars",topObj(link,20));const rows=A.rels.map(r=>({Pred:v(r,["pred_task_id","pred_task_code"]),Succ:v(r,["task_id","succ_task_id","succ_task_code"]),Type:v(r,["pred_type","pred_relation_type","rel_type"]),Lag:v(r,["lag_hr_cnt","lag_drtn_hr_cnt","lag"])}));table("logicTable",rows,["Pred","Succ","Type","Lag"],1500)}
+function renderConstraints(){set("cfCons",A.metrics.constraints||0);set("cfCrit",A.metrics.crit||0);set("cfFloat",A.metrics.highFloat||0);set("cfMile",A.metrics.milestones||0);const rows=A.tasks.map(taskRow).filter(r=>r.Constraint||num(r.Float)>num(el("thrFloat").value)||/mile/i.test(r.Type)||r.ActivityID);table("constraintTable",rows,["ActivityID","Name","Status","Type","Start","Finish","Float","Constraint"],1500)}
+function renderCodes(){set("acTypes",A.actvTypes.length);set("acValues",A.actvCodes.length);set("acAssign",A.taskActv.length);const coded=new Set(A.taskActv.map(x=>v(x,["task_id","task_code"])).filter(Boolean));set("acTask",coded.size);const codeRows=A.taskActv.map(x=>({ActivityID:v(x,["task_id","task_code"]),CodeType:A.maps.codeTypeName[v(x,["actv_code_type_id"])]||v(x,["actv_code_type_id"]),Code:A.maps.codeName[v(x,["actv_code_id"])]||v(x,["actv_code_id"])}));bars("codeBars",group(codeRows,x=>x.CodeType||"(blank)"));bars("codeMissingBars",{"Coded activities":coded.size,"No code assignment":Math.max(0,A.tasks.length-coded.size)});table("codesTable",codeRows,["ActivityID","CodeType","Code"],1500)}
+function renderUdf(){set("uTypes",A.udfTypes.length);set("uValues",A.udfValues.length);let task=0,rs=0;const rows=A.udfValues.map(x=>{const subject=v(x,["fk_id","task_id","rsrc_id"]);const t=A.maps.udfName[v(x,["udf_type_id"])]||v(x,["udf_type_id"]);const val=v(x,["udf_text","udf_number","udf_date","udf_code_id","udf_value"]);const tbl=v(x,["table_name","udf_table_name","subject_area"]);if(/task/i.test(tbl))task++;if(/rsrc|resource/i.test(tbl))rs++;return{Subject:subject,Table:tbl,UDF:t,Value:val}});set("uTask",task);set("uRsrc",rs);table("udfTable",rows,["Subject","Table","UDF","Value"],1500)}
+function renderResources(){set("rCount",A.resources.length);set("raCount",A.assignments.length);set("rTaskCount",(A.metrics.assignTasks||new Set()).size);const cost=sum(A.assignments,x=>num(v(x,["target_cost","remain_cost","act_reg_cost","cost","planned_cost"])));set("rCost",Math.round(cost));bars("resTypeBars",group(A.resources,x=>v(x,["rsrc_type","rsrc_catg_type_id"])||"(blank)"));const ra=group(A.assignments,x=>A.maps.resName[v(x,["rsrc_id"])]||v(x,["rsrc_id"])||"(blank)");bars("resAssignBars",topObj(ra,20));const rows=A.assignments.map(x=>({ActivityID:v(x,["task_id","task_code"]),Resource:A.maps.resName[v(x,["rsrc_id"])]||v(x,["rsrc_id"]),Units:v(x,["target_qty","remain_qty","act_reg_qty"]),Cost:v(x,["target_cost","remain_cost","act_reg_cost","cost","planned_cost"])}));table("resourcesTable",rows,["ActivityID","Resource","Units","Cost"],1500)}
+function renderRisk(){table("riskTable",A.risks,["RiskID","ActivityID","Risk","Impact","Probability","Score","RecommendedAction","Detail"],1500)}
+function renderPeriod(){const rows=periodRows();table("periodTable",rows,["Period","Starts","Finishes","NotStarted","InProgress","Completed","Assignments"]);bars("periodBars",Object.fromEntries(rows.map(r=>[r.Period,r.Starts])));bars("finishBars",Object.fromEntries(rows.map(r=>[r.Period,r.Finishes])))}
+function periodRows(){const g={};A.tasks.forEach(x=>{const s=(dt(x,["start_date","target_start_date","early_start_date"])||"(no date)").slice(0,7), f=(dt(x,["end_date","target_end_date","early_end_date"])||"(no date)").slice(0,7), st=(v(x,["status_code","task_status"])||"").toLowerCase();g[s]=g[s]||{Period:s,Starts:0,Finishes:0,NotStarted:0,InProgress:0,Completed:0,Assignments:0};g[s].Starts++;if(/not/.test(st))g[s].NotStarted++;else if(/comp|finish/.test(st))g[s].Completed++;else g[s].InProgress++;g[f]=g[f]||{Period:f,Starts:0,Finishes:0,NotStarted:0,InProgress:0,Completed:0,Assignments:0};g[f].Finishes++});A.assignments.forEach(a=>{const t=A.maps.taskById[v(a,["task_id","task_code"])];const s=t?(dt(t,["start_date","target_start_date","early_start_date"])||"(no date)").slice(0,7):"(no date)";g[s]=g[s]||{Period:s,Starts:0,Finishes:0,NotStarted:0,InProgress:0,Completed:0,Assignments:0};g[s].Assignments++});return Object.values(g).sort((a,b)=>a.Period.localeCompare(b.Period))}
+function renderCompare(){set("cAdded",comparison.added);set("cDeleted",comparison.deleted);set("cChanged",comparison.changed);set("cLogic",comparison.logic);table("compareTable",comparison.rows,["Change","ActivityID","Field","Previous","Current"],1500)}
+function renderEvm(){
+ const tf=A.fields.TASK||[], af=A.fields.TASKRSRC||[];
+ const hasBase=tf.some(f=>/base|target|bl/i.test(f)), hasActual=tf.some(f=>/^act|actual/i.test(f)), hasCost=af.some(f=>/cost|price/i.test(f)), hasProgress=tf.some(f=>/complete|pct|phys/i.test(f));
+ set("eBase",hasBase?"YES":"NO");set("eActual",hasActual?"YES":"NO");set("eCost",hasCost?"YES":"NO");
+ const rows=sCurveRows();
+ const last=rows.length?rows[rows.length-1]:{CumPlanned:0,CumEarned:0,CumActual:0};
+ const spi=last.CumPlanned?last.CumEarned/last.CumPlanned:0;
+ set("eSpi",last.CumPlanned?spi.toFixed(2):"--");
+ set("ePv",Math.round(last.CumPlanned));set("eEv",Math.round(last.CumEarned));set("eAc",Math.round(last.CumActual));set("eVar",Math.round(last.CumEarned-last.CumPlanned));
+ renderLineChart("sCurveSvg",rows,[
+   {key:"CumPlanned",label:"PV Lite / Planned",cls:"linePlanned"},
+   {key:"CumEarned",label:"EV Lite / Earned",cls:"lineActual"},
+   {key:"CumForecast",label:"Forecast",cls:"lineForecast"}
+ ]);
+ renderLineChart("costCurveSvg",rows,[
+   {key:"CumPlannedCost",label:"Planned Cost Lite",cls:"linePlanned"},
+   {key:"CumActualCost",label:"Actual/Assigned Cost Lite",cls:"lineActual"}
+ ]);
+ table("sCurveDetailTable",rows,["Period","PlannedCount","CompletedCount","EarnedCount","CumPlanned","CumEarned","CumForecast","CumPlannedCost","CumActualCost"]);
+}
+
+function sCurveRows(){
+ const by={};
+ function keyDate(x,keys){const d=dt(x,keys);return d?d.slice(0,7):"(no date)"}
+ const costByTask={};
+ A.assignments.forEach(a=>{
+   const id=v(a,["task_id","task_code"]);
+   costByTask[id]=(costByTask[id]||0)+num(v(a,["target_cost","remain_cost","act_reg_cost","cost","planned_cost"]));
+ });
+ A.tasks.forEach(t=>{
+   const id=idTask(t);
+   const p=keyDate(t,["target_start_date","early_start_date","start_date"]);
+   const f=keyDate(t,["act_end_date","act_start_date","end_date","target_end_date"]);
+   if(!by[p])by[p]={Period:p,PlannedCount:0,CompletedCount:0,EarnedCount:0,PlannedCost:0,ActualCost:0};
+   by[p].PlannedCount++;
+   by[p].PlannedCost += costByTask[id]||1;
+   const status=(v(t,["status_code","task_status"])||"").toLowerCase();
+   const complete=/comp|finish|complete/.test(status)||v(t,["act_end_date"]);
+   if(complete){
+     if(!by[f])by[f]={Period:f,PlannedCount:0,CompletedCount:0,EarnedCount:0,PlannedCost:0,ActualCost:0};
+     by[f].CompletedCount++;
+     by[f].EarnedCount++;
+     by[f].ActualCost += costByTask[id]||1;
+   }
+ });
+ let rows=Object.values(by).sort((a,b)=>String(a.Period).localeCompare(String(b.Period)));
+ let cp=0,ce=0,cc=0,ca=0;
+ rows.forEach((r,i)=>{
+   cp+=r.PlannedCount; ce+=r.EarnedCount; cc+=r.PlannedCost; ca+=r.ActualCost;
+   r.CumPlanned=cp; r.CumEarned=ce; r.CumPlannedCost=Math.round(cc); r.CumActualCost=Math.round(ca);
+ });
+ if(rows.length>=2){
+   const last=rows[rows.length-1], prev=rows[Math.max(0,rows.length-2)];
+   const slope=(last.CumEarned-prev.CumEarned)||0;
+   rows.forEach((r,i)=>r.CumForecast=r.CumEarned);
+   for(let i=1;i<=3;i++){
+     const period="Forecast+"+i;
+     const val=Math.min(last.CumPlanned, last.CumEarned + slope*i);
+     rows.push({Period:period,PlannedCount:0,CompletedCount:0,EarnedCount:0,CumPlanned:last.CumPlanned,CumEarned:last.CumEarned,CumForecast:Math.round(val),CumPlannedCost:last.CumPlannedCost,CumActualCost:last.CumActualCost});
+   }
+ }else{
+   rows.forEach(r=>r.CumForecast=r.CumEarned);
+ }
+ return rows;
+}
+
+function renderLineChart(id,rows,series){
+ const elc=el(id); if(!rows||!rows.length){elc.innerHTML="<div class='notice'>No curve data.</div>";return}
+ const w=900,h=300,p=42;
+ const vals=[]; rows.forEach(r=>series.forEach(s=>vals.push(num(r[s.key]))));
+ const max=Math.max(1,...vals);
+ const x=i=>p + (rows.length===1?0:i*(w-2*p)/(rows.length-1));
+ const y=v=>h-p - (num(v)/max)*(h-2*p);
+ function path(s){return rows.map((r,i)=>(i?"L":"M")+x(i).toFixed(1)+","+y(r[s.key]).toFixed(1)).join(" ")}
+ let svg=`<svg viewBox="0 0 ${w} ${h}" width="100%" height="100%">`;
+ for(let i=0;i<=5;i++){const yy=p+i*(h-2*p)/5;svg+=`<line class="gridline" x1="${p}" y1="${yy}" x2="${w-p}" y2="${yy}"/>`}
+ svg+=`<line class="axis" x1="${p}" y1="${h-p}" x2="${w-p}" y2="${h-p}"/><line class="axis" x1="${p}" y1="${p}" x2="${p}" y2="${h-p}"/>`;
+ series.forEach((s,idx)=>{svg+=`<path class="${s.cls}" d="${path(s)}"/>`; svg+=`<text class="legend" x="${p+idx*210}" y="22">${esc(s.label)}</text>`});
+ const step=Math.max(1,Math.ceil(rows.length/8));
+ rows.forEach((r,i)=>{if(i%step===0)svg+=`<text class="legend" x="${x(i)-18}" y="${h-12}" transform="rotate(0 ${x(i)} ${h-12})">${esc(String(r.Period))}</text>`});
+ svg+=`<text class="legend" x="${p+5}" y="${p-8}">${Math.round(max)}</text><text class="legend" x="${p+5}" y="${h-p-4}">0</text>`;
+ svg+="</svg>";
+ elc.innerHTML=svg;
+}
+function renderCalendar(){table("calTable",A.calendars,A.fields.CALENDAR||["clndr_id","clndr_name","clndr_type","default_flag"],1000)}
+function renderCustomDash(){const dim=el("dashDim").value, met=el("dashMetric").value;const assignCostByTask={};A.assignments.forEach(a=>{const id=v(a,["task_id","task_code"]);assignCostByTask[id]=(assignCostByTask[id]||0)+num(v(a,["target_cost","remain_cost","act_reg_cost","cost","planned_cost"]))});const out={};A.tasks.forEach(x=>{let k="";if(dim==="status")k=v(x,["status_code","task_status"])||"(blank)";if(dim==="wbs")k=A.maps.wbsName[v(x,["wbs_id"])]||v(x,["wbs_id"])||"(blank)";if(dim==="month")k=(dt(x,["start_date","target_start_date","early_start_date"])||"(no date)").slice(0,7);if(dim==="calendar")k=v(x,["clndr_id"])||"(blank)";if(dim==="constraint")k=v(x,["cstr_type","constraint_type","primary_constraint_type"])||"(none)";if(dim==="code"){const ca=A.taskActv.find(c=>v(c,["task_id","task_code"])===idTask(x));k=ca?(A.maps.codeName[v(ca,["actv_code_id"])]||v(ca,["actv_code_id"])):"(no code)"}const add=met==="duration"?num(v(x,["target_drtn_hr_cnt","orig_drtn_hr_cnt","remain_drtn_hr_cnt"])):met==="cost"?(assignCostByTask[idTask(x)]||0):1;out[k]=(out[k]||0)+add});bars("customDash",topObj(out,40))}
+function renderDataDict(){const names=Object.keys(A.tables).sort();let cards="";names.forEach(n=>{cards+=`<div class="card"><h3>${esc(n)}</h3><div class="big">${A.tables[n].length}</div><div class="small">${(A.fields[n]||[]).length} fields</div></div>`});setHtml("tableCoverage",cards||"<div class='notice'>No tables loaded.</div>");const rows=names.map(n=>({Table:n,Rows:A.tables[n].length,Fields:(A.fields[n]||[]).length,FieldList:(A.fields[n]||[]).slice(0,18).join(", ")}));table("dictTable",rows,["Table","Rows","Fields","FieldList"],1000)}
+function renderRawSel(){const s=el("rawSel"), names=Object.keys(A.tables).sort();s.innerHTML=names.map(x=>`<option>${esc(x)}</option>`).join("");renderRaw()}
+function renderRaw(){const name=el("rawSel").value, q=(el("rawSearch").value||"").toLowerCase();let data=A.tables[name]||[];if(q)data=data.filter(r=>Object.values(r).join(" ").toLowerCase().includes(q));const cols=A.fields[name]||Object.keys(data[0]||{});table("rawTable",data,cols.slice(0,60),800)}
+function group(arr,fn){const o={};arr.forEach(x=>{const k=fn(x);o[k]=(o[k]||0)+1});return o}function topObj(o,n){return Object.fromEntries(Object.entries(o||{}).sort((a,b)=>b[1]-a[1]).slice(0,n))}
+function sum(arr,fn){return arr.reduce((a,x)=>a+fn(x),0)}
+function bars(id,obj){const vals=Object.entries(obj||{}).sort((a,b)=>b[1]-a[1]), max=Math.max(1,...vals.map(x=>x[1]));el(id).innerHTML=vals.length?vals.map(([k,v])=>`<div class="barline"><div class="lab">${esc(k)}</div><div class="bar"><div class="fill" style="width:${Math.round(v/max*100)}%"></div></div><div class="val">${Math.round(v*100)/100}</div></div>`).join(""):"No data."}
+function table(id,rows,cols,lim=800){const e=el(id);if(!rows||!rows.length){e.innerHTML="<tr><td>No data.</td></tr>";return}e.innerHTML="<thead><tr>"+cols.map(c=>`<th>${esc(c)}</th>`).join("")+"</tr></thead><tbody>"+rows.slice(0,lim).map(r=>"<tr>"+cols.map(c=>`<td>${fmt(r[c])}</td>`).join("")+"</tr>").join("")+"</tbody>"}
+function fmt(x){const s=esc(x??"");if(s==="red")return'<span class="badge r">red</span>';if(s==="amber")return'<span class="badge a">amber</span>';if(s==="blue")return'<span class="badge b">blue</span>';if(s==="PASS")return'<span class="badge g">PASS</span>';if(s==="WARN")return'<span class="badge a">WARN</span>';return s}
+function exportCSV(kind){if(!A.name){alert("Load XER first.");return}let data=[],name=kind;if(kind==="activities")data=A.tasks.map(taskRow);else if(kind==="warnings")data=A.warnings;else if(kind==="raw"){const t=el("rawSel").value;data=A.tables[t]||[];name=t}if(!data.length){alert("No rows.");return}const cols=Object.keys(data[0]);download(cols.map(csv).join(",")+"\n"+data.map(r=>cols.map(c=>csv(r[c]??"")).join(",")).join("\n"),"AURORA_"+name+".csv","text/csv")}
+function exportReport(){if(!A.name){alert("Load XER first.");return}const h=`<!doctype html><meta charset="utf-8"><title>AURORA XER Report</title><style>body{font-family:Segoe UI,Arial;margin:24px}table{border-collapse:collapse;width:100%;font-size:12px}td,th{border:1px solid #ccc;padding:6px}th{background:#173b5d;color:white}pre{background:#eef6ff;padding:12px;border-radius:8px;white-space:pre-wrap}</style><h1>AURORA XER Insight v0.4 Report</h1><p><b>${esc(A.name)}</b><br>${new Date().toLocaleString()}</p><pre>${el("execSummary").textContent}</pre><h2>Quality Warnings</h2>${htmlTable(A.warnings,["severity","type","activity","name","detail"])}<h2>Risk Register</h2>${htmlTable(A.risks,["RiskID","ActivityID","Risk","Impact","Probability","Score","RecommendedAction","Detail"])}<h2>Comparison</h2>${htmlTable(comparison.rows.slice(0,800),["Change","ActivityID","Field","Previous","Current"])}`;download(h,"AURORA_XER_Insight_v0_3_Report.html","text/html")}
+function htmlTable(rows,cols){if(!rows.length)return"<p>No data.</p>";return"<table><tr>"+cols.map(c=>`<th>${esc(c)}</th>`).join("")+"</tr>"+rows.map(r=>"<tr>"+cols.map(c=>`<td>${esc(r[c]??"")}</td>`).join("")+"</tr>").join("")+"</table>"}
+function set(id,x){el(id).textContent=x}function setHtml(id,x){el(id).innerHTML=x}function el(id){return document.getElementById(id)}function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]))}function csv(v){return'"'+String(v??"").replace(/"/g,'""')+'"'}function download(c,n,t){const b=new Blob([c],{type:t}),u=URL.createObjectURL(b),a=document.createElement("a");a.href=u;a.download=n;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(u)}
+renderAll();
+</script>
+</body>
+</html>
