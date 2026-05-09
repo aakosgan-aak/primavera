@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>AURORA XER Insight Free v0.4</title>
+<title>AURORA XER Insight Free v0.5</title>
 <style>
 :root{
   --bg:#f4f7fb;--ink:#162033;--muted:#64748b;--panel:#fff;--line:#d8e0ea;
@@ -35,13 +35,27 @@ pre{background:#0d1b2a;color:#dbeafe;border-radius:14px;padding:14px;overflow:au
 .tree div{padding:6px 10px;border-bottom:1px solid #edf2f7;font-size:13px}.i0{font-weight:800}.i1{padding-left:26px!important}.i2{padding-left:48px!important}.i3{padding-left:70px!important}
 .barline{display:flex;align-items:center;gap:8px;margin:6px 0}.barline .lab{width:190px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px}.bar{height:14px;background:#e5e7eb;border-radius:99px;overflow:hidden;flex:1}.fill{height:100%;background:linear-gradient(90deg,#0f6b9e,#0e9f9a)}.val{width:70px;text-align:right;color:var(--muted);font-size:12px}
 .kpirow{display:flex;flex-wrap:wrap;gap:8px}.pill{background:#eef6ff;border:1px solid #cfe5ff;border-radius:99px;padding:6px 9px;font-size:12px}.svgchart{width:100%;height:320px;border:1px solid var(--line);border-radius:14px;background:white}.axis{stroke:#94a3b8;stroke-width:1}.gridline{stroke:#e2e8f0;stroke-width:1}.lineActual{fill:none;stroke:#0f6b9e;stroke-width:3}.linePlanned{fill:none;stroke:#0e9f9a;stroke-width:3}.lineForecast{fill:none;stroke:#b45309;stroke-width:3;stroke-dasharray:7 5}.dot{fill:#0f6b9e}.legend{font-size:12px;fill:#475569}.pass{color:#166534;font-weight:800}.warn{color:#92400e;font-weight:800}.fail{color:#991b1b;font-weight:800}
+
+.ganttHost{overflow:auto;border:1px solid var(--line);border-radius:14px;background:white;max-height:640px}
+.ganttGrid{min-width:980px;font-size:12px}
+.ganttRow{display:grid;grid-template-columns:220px 1fr;border-bottom:1px solid #e5eaf0;min-height:28px}
+.ganttName{padding:7px 8px;background:#f8fafc;border-right:1px solid #e5eaf0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ganttTimeline{position:relative;padding:4px 0}
+.ganttBar{position:absolute;height:16px;border-radius:4px;background:linear-gradient(90deg,#0f6b9e,#0e9f9a);top:6px}
+.ganttBarActual{background:#15803d}
+.ganttBarBaseline{background:#94a3b8;height:6px;top:23px}
+.ganttCritical{background:#b91c1c}
+.levelChip{display:inline-block;padding:4px 8px;border-radius:999px;margin:2px;font-size:11px;font-weight:700}
+.formGrid{display:grid;grid-template-columns:repeat(4,minmax(150px,1fr));gap:10px;align-items:end}
+.colorInput{height:31px;padding:0}
+
 @media(max-width:1100px){.app{grid-template-columns:1fr}.grid,.grid3,.grid2{grid-template-columns:1fr 1fr}}@media(max-width:700px){.grid,.grid3,.grid2{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <header>
-<h1>AURORA XER Insight Free v0.4</h1>
-<p>Advanced read-only XER toolkit: schedule quality, logic, WBS, codes, UDFs, constraints, float, cost/resource, risk, comparison and reporting.</p>
+<h1>AURORA XER Insight Free v0.5</h1>
+<p>Advanced read-only XER toolkit plus WBS Organizer-style modules: grouping, Gantt, roll-up, distribution, calendars, POBS cleaning and reporting.</p>
 </header>
 <div class="app">
 <aside>
@@ -77,6 +91,12 @@ pre{background:#0d1b2a;color:#dbeafe;border-radius:14px;padding:14px;overflow:au
   <button onclick="nav('dashcreator',this)">Dashboard Creator</button>
   <button onclick="nav('data',this)">Data Dictionary</button>
   <button onclick="nav('raw',this)">Raw Tables</button>
+
+  <button onclick="nav('wbsOrganizer',this)">WBS Organizer</button>
+  <button onclick="nav('gantt',this)">Gantt Chart</button>
+  <button onclick="nav('rollup',this)">WBS Roll-up</button>
+  <button onclick="nav('distribution',this)">Distribution</button>
+  <button onclick="nav('xerutils',this)">XER Utilities</button>
   <button onclick="nav('strategy',this)">Free vs Premium</button>
  </div>
 </aside>
@@ -292,6 +312,90 @@ pre{background:#0d1b2a;color:#dbeafe;border-radius:14px;padding:14px;overflow:au
   <div class="tablewrap"><table id="rawTable"></table></div>
  </section>
 
+
+ <section id="wbsOrganizer" class="sec">
+  <h2>WBS Organizer</h2>
+  <div class="notice info">WBS Organizer-style grouping and coloring for the loaded XER schedule. This is browser-based and read-only; it does not change the original XER file.</div>
+  <div class="grid2">
+   <div class="card">
+    <h3>Layout Settings</h3>
+    <div class="formGrid">
+      <div><label>Level 0 Color</label><input id="wbsColor0" class="colorInput" type="color" value="#dbeafe"/></div>
+      <div><label>Level 1 Color</label><input id="wbsColor1" class="colorInput" type="color" value="#dcfce7"/></div>
+      <div><label>Level 2 Color</label><input id="wbsColor2" class="colorInput" type="color" value="#fef3c7"/></div>
+      <div><label>Level 3+ Color</label><input id="wbsColor3" class="colorInput" type="color" value="#fee2e2"/></div>
+    </div>
+    <div class="toolbar">
+      <label><input id="wbsTrimNames" type="checkbox" checked style="width:auto;height:auto"/> Remove leading spaces</label>
+      <button onclick="renderWbsOrganizer()">Apply Layout</button>
+      <button onclick="exportCSV('wbs-organizer')">Export WBS CSV</button>
+    </div>
+    <div id="wbsLayoutPreview"></div>
+   </div>
+   <div class="card">
+    <h3>WBS Level Summary</h3>
+    <div id="wbsLevelBars"></div>
+   </div>
+  </div>
+  <div class="tablewrap"><table id="wbsOrganizerTable"></table></div>
+ </section>
+
+ <section id="gantt" class="sec">
+  <h2>Gantt Chart</h2>
+  <div class="notice">Draws a lightweight Gantt view from XER dates. If a previous/baseline XER is loaded, baseline bars are shown below current bars.</div>
+  <div class="toolbar">
+    <select id="ganttScale" onchange="renderGantt()"><option value="month">Monthly</option><option value="week">Weekly</option><option value="day">Daily</option></select>
+    <select id="ganttCriticalMethod" onchange="renderGantt()"><option value="float">Critical by Total Float</option><option value="flag">Critical by Critical Flag</option></select>
+    <label><input id="ganttDataDateSplit" type="checkbox" style="width:auto;height:auto" onchange="renderGantt()"/> Draw by data date / actual split</label>
+    <button onclick="renderGantt()">Refresh Gantt</button>
+  </div>
+  <div class="ganttHost"><div id="ganttChart" class="ganttGrid">No data.</div></div>
+ </section>
+
+ <section id="rollup" class="sec">
+  <h2>WBS Roll-up</h2>
+  <div class="notice">Calculates dynamic WBS roll-up values: activity count, min start, max finish, total duration, total float, resource assignment count and cost-like totals.</div>
+  <div class="grid">
+   <div class="card"><h3>WBS Nodes</h3><div class="big" id="ruWbs">0</div></div>
+   <div class="card"><h3>Rolled Activities</h3><div class="big" id="ruActs">0</div></div>
+   <div class="card"><h3>Cost-like Total</h3><div class="big" id="ruCost">0</div></div>
+   <div class="card"><h3>Assignments</h3><div class="big" id="ruAssign">0</div></div>
+  </div>
+  <div class="toolbar"><button onclick="exportCSV('rollup')">Export Roll-up CSV</button></div>
+  <div class="tablewrap"><table id="rollupTable"></table></div>
+ </section>
+
+ <section id="distribution" class="sec">
+  <h2>Advanced Distribution</h2>
+  <div class="notice">Creates a standalone distribution table from a total quantity/cost and period range. Supports linear, frontload and backload profiles with daily, weekly or monthly buckets.</div>
+  <div class="card">
+    <h3>Distribution Settings</h3>
+    <div class="formGrid">
+      <div><label>Total Quantity / Cost</label><input id="distTotal" type="number" value="1000"/></div>
+      <div><label>Start Date</label><input id="distStart" type="date"/></div>
+      <div><label>Finish Date</label><input id="distFinish" type="date"/></div>
+      <div><label>Period</label><select id="distPeriod"><option value="month">Monthly</option><option value="week">Weekly</option><option value="day">Daily</option></select></div>
+      <div><label>Profile</label><select id="distProfile"><option value="linear">Linear</option><option value="frontload">Frontload</option><option value="backload">Backload</option></select></div>
+      <div><label>Weekend Mode</label><select id="distWeekend"><option value="include">Include weekends</option><option value="exclude">Exclude weekends</option></select></div>
+      <div><label>Special Dates comma-separated</label><input id="distSpecial" placeholder="2026-01-01,2026-04-23"/></div>
+      <div><button onclick="renderDistribution()">Generate Distribution</button></div>
+    </div>
+  </div>
+  <div class="toolbar"><button onclick="exportCSV('distribution')">Export Distribution CSV</button></div>
+  <div class="tablewrap"><table id="distributionTable"></table></div>
+ </section>
+
+ <section id="xerutils" class="sec">
+  <h2>XER Utilities</h2>
+  <div class="grid">
+    <div class="card"><h3>POBS Cleaner</h3><div class="small">Removes the POBS table from the loaded XER text and downloads a cleaned copy.</div><button onclick="downloadPobsCleanedXer()">Download POBS-Cleaned XER</button></div>
+    <div class="card"><h3>Print Calendars</h3><div class="small">Creates a printable HTML calendar report from XER calendar rows.</div><button onclick="downloadCalendarReport()">Download Calendar Report</button></div>
+    <div class="card"><h3>Excel Templates</h3><div class="small">Downloads CSV templates for WBS, Activity Codes, Activity List and Resource Dictionary.</div><button onclick="downloadTemplatePack()">Download Template CSVs</button></div>
+    <div class="card"><h3>XER Import / Export Scope</h3><div class="small">Free HTML version exports templates/reports. Full Excel-to-XER writer should remain in Java Pro.</div><button onclick="renderXerUtilityStatus()">Check Utility Status</button></div>
+  </div>
+  <div class="tablewrap"><table id="xerUtilityTable"></table></div>
+ </section>
+
  <section id="strategy" class="sec">
   <h2>Free vs Premium Strategy</h2>
   <div class="card">
@@ -310,7 +414,7 @@ function nav(id,b){document.querySelectorAll(".sec").forEach(s=>s.classList.remo
 async function loadFiles(){const fa=document.getElementById("fileA").files[0];if(!fa){alert("Select current XER first.");return}A=parse(await fa.text(),fa.name);analyze(A);const fb=document.getElementById("fileB").files[0];if(fb){B=parse(await fb.text(),fb.name);analyze(B);compareModels(A,B)}else{B=emptyModel();comparison={rows:[],added:0,deleted:0,changed:0,logic:0}}renderAll();set("fileName",A.name+(B.name?" | Compared with "+B.name:""));set("stat","Analysis completed. Tables parsed: "+Object.keys(A.tables).length+(B.name?" | comparison enabled":""))}
 function resetAll(){A=emptyModel();B=emptyModel();comparison={rows:[],added:0,deleted:0,changed:0,logic:0};renderAll();set("fileName","No XER loaded");set("stat","Load a current XER. Add a previous XER to enable comparison.")}
 function reanalyze(){if(!A.name){alert("Load XER first.");return}analyze(A);if(B.name){analyze(B);compareModels(A,B)}renderAll()}
-function parse(text,name){const m=emptyModel();m.name=name;let cur="",fields=[];for(const line of text.split(/\r?\n/)){if(!line)continue;const p=line.split("\t");if(p[0]==="%T"){cur=p[1];m.tables[cur]=m.tables[cur]||[]}else if(p[0]==="%F"&&cur){fields=p.slice(1);m.fields[cur]=fields}else if(p[0]==="%R"&&cur){const o={};(m.fields[cur]||fields).forEach((f,i)=>o[f]=p[i+1]??"");m.tables[cur].push(o)}}return m}
+function parse(text,name){const m=emptyModel();m.name=name;m.rawText=text;let cur="",fields=[];for(const line of text.split(/\r?\n/)){if(!line)continue;const p=line.split("\t");if(p[0]==="%T"){cur=p[1];m.tables[cur]=m.tables[cur]||[]}else if(p[0]==="%F"&&cur){fields=p.slice(1);m.fields[cur]=fields}else if(p[0]==="%R"&&cur){const o={};(m.fields[cur]||fields).forEach((f,i)=>o[f]=p[i+1]??"");m.tables[cur].push(o)}}return m}
 function rows(m,key){for(const n of tableAliases[key]||[key])if(m.tables[n])return m.tables[n];return[]}function v(o,ks){for(const k of ks)if(o&&o[k]!=null&&o[k]!=="")return o[k];return""}function num(x){const p=parseFloat(x);return isNaN(p)?0:p}
 function idTask(o){return v(o,["task_id","task_code"])}function taskName(o){return v(o,["task_name","name"])}function dt(o,ks){return v(o,ks).slice(0,10)}
 function analyze(m){
@@ -353,7 +457,7 @@ function risk(m){
 function actionFor(t){if(/Missing/.test(t))return"Review CPM logic and add justified predecessor/successor.";if(/Long/.test(t))return"Split activity or justify duration in schedule narrative.";if(/Constraint/.test(t))return"Review constraint necessity and replace with logic where possible.";if(/float/i.test(t))return"Review logic path and float reason.";if(/date/i.test(t))return"Correct status/date fields.";return"Review and document."}
 function w(type,severity,activity,name,detail){return{severity,type,activity,name,detail}}
 function compareModels(a,b){const ma=new Map(a.tasks.map(x=>[idTask(x),x]).filter(x=>x[0])), mb=new Map(b.tasks.map(x=>[idTask(x),x]).filter(x=>x[0]));const rows=[];let added=0,deleted=0,changed=0;const watch=["task_name","status_code","target_drtn_hr_cnt","remain_drtn_hr_cnt","total_float_hr_cnt","start_date","end_date","target_start_date","target_end_date","act_start_date","act_end_date"];for(const [id,ta] of ma){const tb=mb.get(id);if(!tb){added++;rows.push({Change:"Added",ActivityID:id,Field:"Activity",Previous:"",Current:taskName(ta)})}else{watch.forEach(f=>{if((tb[f]||"")!=(ta[f]||"")){changed++;rows.push({Change:"Changed",ActivityID:id,Field:f,Previous:tb[f]||"",Current:ta[f]||""})}})}}for(const [id,tb] of mb){if(!ma.has(id)){deleted++;rows.push({Change:"Deleted",ActivityID:id,Field:"Activity",Previous:taskName(tb),Current:""})}}let logic=0;for(const k of a.metrics.relKeys)if(!b.metrics.relKeys.has(k))logic++;for(const k of b.metrics.relKeys)if(!a.metrics.relKeys.has(k))logic++;comparison={rows,added,deleted,changed,logic}}
-function renderAll(){renderMetrics();renderSummary();renderViewer();renderQuality();renderDcma();renderLogic();renderConstraints();renderCodes();renderUdf();renderResources();renderRisk();renderPeriod();renderCompare();renderEvm();renderCalendar();renderCustomDash();renderDataDict();renderRawSel()}
+function renderAll(){renderMetrics();renderSummary();renderViewer();renderQuality();renderDcma();renderLogic();renderConstraints();renderCodes();renderUdf();renderResources();renderRisk();renderPeriod();renderCompare();renderEvm();renderCalendar();renderCustomDash();renderWbsOrganizer();renderGantt();renderRollup();renderDistribution();renderXerUtilityStatus();renderDataDict();renderRawSel()}
 function renderMetrics(){set("mProj",A.projects.length);set("mTask",A.tasks.length);set("mRel",A.rels.length);set("mHealth",A.name?A.metrics.health:"--");set("mOpen",A.metrics.open||0);set("mLong",A.metrics.long||0);set("mCons",A.metrics.constraints||0);set("mUnres",A.metrics.unres||0);set("healthText",A.name?(A.metrics.health>=+el("thrHealth").value?"Target met":"Below target"):"");bars("statusBars",group(A.tasks,x=>v(x,["status_code","task_status"])||"(blank)"));bars("wbsBars",topObj(group(A.tasks,x=>A.maps.wbsName[v(x,["wbs_id"])]||v(x,["wbs_id"])||"(blank)"),10));}
 function renderSummary(){if(!A.name){setHtml("execSummary","No file loaded.");return}let lines=[];lines.push("EXECUTIVE SUMMARY");lines.push("=================");lines.push("File: "+A.name);lines.push("Projects: "+A.projects.length+" | WBS nodes: "+A.wbs.length+" | Activities: "+A.tasks.length+" | Relationships: "+A.rels.length);lines.push("Resources: "+A.resources.length+" | Resource assignments: "+A.assignments.length+" | Calendars: "+A.calendars.length);lines.push("Activity code types: "+A.actvTypes.length+" | code values: "+A.actvCodes.length+" | code assignments: "+A.taskActv.length);lines.push("UDF types: "+A.udfTypes.length+" | UDF values: "+A.udfValues.length);lines.push("");lines.push("Health score: "+(A.name?A.metrics.health:"--"));lines.push("Open-end warnings: "+A.metrics.open+", long durations: "+A.metrics.long+", constraints: "+A.metrics.constraints+", high float: "+A.metrics.highFloat+", lag/lead issues: "+A.metrics.lag+"/"+A.metrics.lead+".");lines.push("Unresourced activities: "+A.metrics.unres+". Critical activities detected: "+A.metrics.crit+". Milestones detected: "+A.metrics.milestones+".");if(B.name){lines.push("");lines.push("COMPARISON");lines.push("Previous file: "+B.name);lines.push("Added: "+comparison.added+", deleted: "+comparison.deleted+", changed fields: "+comparison.changed+", logic changes: "+comparison.logic+".")}lines.push("");lines.push("Recommended actions:");if(A.metrics.open)lines.push("- Fix or justify missing predecessor/successor logic.");if(A.metrics.constraints)lines.push("- Review hard/soft constraints and replace with logic where possible.");if(A.metrics.highFloat)lines.push("- Review high-float activities for weak logic.");if(A.metrics.lag)lines.push("- Review lags/leads and document rationale.");if(A.metrics.unres)lines.push("- Review resource/cost loading if EVM or S-curve reporting is required.");if(!A.metrics.open&&!A.metrics.constraints&&!A.metrics.highFloat&&!A.metrics.lag)lines.push("- Basic rule set did not detect major quality issues.");setHtml("execSummary",esc(lines.join("\n")))}
 function taskRow(x){const id=idTask(x), wbs=v(x,["wbs_id"]);return{ActivityID:id,Name:taskName(x),WBS:A.maps.wbsName[wbs]||wbs,Status:v(x,["status_code","task_status"]),Type:v(x,["task_type","task_type_code"]),Start:dt(x,["start_date","target_start_date","early_start_date","act_start_date"]),Finish:dt(x,["end_date","target_end_date","early_end_date","act_end_date"]),DurationHours:v(x,["target_drtn_hr_cnt","orig_drtn_hr_cnt","remain_drtn_hr_cnt"]),Float:v(x,["total_float_hr_cnt","free_float_hr_cnt"]),Constraint:v(x,["cstr_type","constraint_type","primary_constraint_type"]),Pred:(A.metrics.pred||{})[id]||0,Succ:(A.metrics.succ||{})[id]||0}}
@@ -512,6 +616,93 @@ function renderLineChart(id,rows,series){
 }
 function renderCalendar(){table("calTable",A.calendars,A.fields.CALENDAR||["clndr_id","clndr_name","clndr_type","default_flag"],1000)}
 function renderCustomDash(){const dim=el("dashDim").value, met=el("dashMetric").value;const assignCostByTask={};A.assignments.forEach(a=>{const id=v(a,["task_id","task_code"]);assignCostByTask[id]=(assignCostByTask[id]||0)+num(v(a,["target_cost","remain_cost","act_reg_cost","cost","planned_cost"]))});const out={};A.tasks.forEach(x=>{let k="";if(dim==="status")k=v(x,["status_code","task_status"])||"(blank)";if(dim==="wbs")k=A.maps.wbsName[v(x,["wbs_id"])]||v(x,["wbs_id"])||"(blank)";if(dim==="month")k=(dt(x,["start_date","target_start_date","early_start_date"])||"(no date)").slice(0,7);if(dim==="calendar")k=v(x,["clndr_id"])||"(blank)";if(dim==="constraint")k=v(x,["cstr_type","constraint_type","primary_constraint_type"])||"(none)";if(dim==="code"){const ca=A.taskActv.find(c=>v(c,["task_id","task_code"])===idTask(x));k=ca?(A.maps.codeName[v(ca,["actv_code_id"])]||v(ca,["actv_code_id"])):"(no code)"}const add=met==="duration"?num(v(x,["target_drtn_hr_cnt","orig_drtn_hr_cnt","remain_drtn_hr_cnt"])):met==="cost"?(assignCostByTask[idTask(x)]||0):1;out[k]=(out[k]||0)+add});bars("customDash",topObj(out,40))}
+
+function getWbsLevelMap(){
+ const level={}; const byId={}; A.wbs.forEach(w=>byId[v(w,["wbs_id"])]=w);
+ function lvl(id,seen){ if(!id||!byId[id])return 0; if(seen&&seen[id])return 0; const p=v(byId[id],["parent_wbs_id","parent_id"]); return p?1+lvl(p,Object.assign({},seen||{},{[id]:true})):0; }
+ A.wbs.forEach(w=>level[v(w,["wbs_id"])]=lvl(v(w,["wbs_id"])));
+ return level;
+}
+function wbsOrganizerRows(){
+ const levels=getWbsLevelMap(), trim=el("wbsTrimNames")?el("wbsTrimNames").checked:true;
+ return A.wbs.map(w=>{const id=v(w,["wbs_id"]), code=v(w,["wbs_short_name","wbs_code"]), raw=v(w,["wbs_name"]);return{Level:levels[id]||0,WBS_ID:id,WBS_Code:trim?String(code).trim():code,WBS_Name:trim?String(raw).trimStart():raw,Parent:v(w,["parent_wbs_id","parent_id"]),Color:wbsColor(levels[id]||0)}}).sort((a,b)=>a.Level-b.Level||String(a.WBS_Code).localeCompare(String(b.WBS_Code)));
+}
+function wbsColor(level){return level<=0?el("wbsColor0").value:level===1?el("wbsColor1").value:level===2?el("wbsColor2").value:el("wbsColor3").value}
+function renderWbsOrganizer(){
+ const rows=wbsOrganizerRows();
+ setHtml("wbsLayoutPreview",[0,1,2,3].map(l=>`<span class="levelChip" style="background:${wbsColor(l)}">Level ${l}${l===3?"+":""}</span>`).join(""));
+ bars("wbsLevelBars",group(rows,r=>"Level "+r.Level));
+ const e=el("wbsOrganizerTable"); if(!rows.length){e.innerHTML="<tr><td>No WBS data.</td></tr>";return}
+ e.innerHTML="<thead><tr><th>Color</th><th>Level</th><th>WBS Code</th><th>WBS Name</th><th>WBS ID</th><th>Parent</th></tr></thead><tbody>"+
+ rows.map(r=>`<tr style="background:${r.Color}"><td>${esc(r.Color)}</td><td>${r.Level}</td><td>${esc(r.WBS_Code)}</td><td>${esc(r.WBS_Name)}</td><td>${esc(r.WBS_ID)}</td><td>${esc(r.Parent)}</td></tr>`).join("")+"</tbody>";
+}
+function dateValue(s){const d=Date.parse(String(s||"").slice(0,10));return isNaN(d)?0:d}
+function ganttRows(){
+ const baseMap={}; if(B&&B.tasks)B.tasks.forEach(t=>baseMap[idTask(t)]=t);
+ return A.tasks.map(t=>{const id=idTask(t), b=baseMap[id];return{ID:id,Name:taskName(t),Start:dt(t,["start_date","target_start_date","early_start_date","act_start_date"]),Finish:dt(t,["end_date","target_end_date","early_end_date","act_end_date"]),BaseStart:b?dt(b,["start_date","target_start_date","early_start_date","act_start_date"]):"",BaseFinish:b?dt(b,["end_date","target_end_date","early_end_date","act_end_date"]):"",Float:num(v(t,["total_float_hr_cnt","free_float_hr_cnt"])),Critical:/crit|yes|Y/i.test(v(t,["critical_flag","critical_path_flag"]))}}).filter(r=>dateValue(r.Start)&&dateValue(r.Finish)).slice(0,300);
+}
+function renderGantt(){
+ const rows=ganttRows(); const host=el("ganttChart"); if(!rows.length){host.innerHTML="No dated activity data.";return}
+ let min=Math.min(...rows.map(r=>dateValue(r.Start)).concat(rows.map(r=>dateValue(r.BaseStart)).filter(Boolean))), max=Math.max(...rows.map(r=>dateValue(r.Finish)).concat(rows.map(r=>dateValue(r.BaseFinish)).filter(Boolean)));
+ if(!isFinite(min)||!isFinite(max)||max<=min){host.innerHTML="Invalid date range.";return}
+ const method=el("ganttCriticalMethod").value, split=el("ganttDataDateSplit").checked; const total=max-min;
+ function pos(d){return Math.max(0,Math.min(96,(dateValue(d)-min)/total*96))}
+ function wid(s,f){return Math.max(1,pos(f)-pos(s))}
+ let html="";
+ rows.forEach(r=>{const crit=method==="flag"?r.Critical:r.Float<=0; const cls=crit?"ganttBar ganttCritical":"ganttBar"; html+=`<div class="ganttRow"><div class="ganttName">${esc(r.ID)} — ${esc(r.Name)}</div><div class="ganttTimeline"><div class="${cls}" style="left:${pos(r.Start)}%;width:${wid(r.Start,r.Finish)}%"></div>${r.BaseStart&&r.BaseFinish?`<div class="ganttBarBaseline" style="left:${pos(r.BaseStart)}%;width:${wid(r.BaseStart,r.BaseFinish)}%"></div>`:""}${split?`<div class="small" style="position:absolute;right:6px;top:5px">split view</div>`:""}</div></div>`});
+ host.innerHTML=html;
+}
+function rollupRows(){
+ const costByTask={}; A.assignments.forEach(a=>{const id=v(a,["task_id","task_code"]);costByTask[id]=(costByTask[id]||0)+num(v(a,["target_cost","remain_cost","act_reg_cost","cost","planned_cost"]))});
+ const assignByTask={}; A.assignments.forEach(a=>{const id=v(a,["task_id","task_code"]);assignByTask[id]=(assignByTask[id]||0)+1});
+ const map={};
+ A.tasks.forEach(t=>{const wid=v(t,["wbs_id"])||"(blank)", id=idTask(t), s=dateValue(dt(t,["start_date","target_start_date","early_start_date","act_start_date"])), f=dateValue(dt(t,["end_date","target_end_date","early_end_date","act_end_date"])); if(!map[wid])map[wid]={WBS_ID:wid,WBS:A.maps.wbsName[wid]||wid,ActivityCount:0,MinStart:"",MaxFinish:"",TotalDurationHours:0,TotalFloatHours:0,Assignments:0,CostLikeTotal:0}; const r=map[wid]; r.ActivityCount++; r.TotalDurationHours+=num(v(t,["target_drtn_hr_cnt","orig_drtn_hr_cnt","remain_drtn_hr_cnt"])); r.TotalFloatHours+=num(v(t,["total_float_hr_cnt","free_float_hr_cnt"])); r.Assignments+=assignByTask[id]||0; r.CostLikeTotal+=costByTask[id]||0; const ds=dt(t,["start_date","target_start_date","early_start_date","act_start_date"]), df=dt(t,["end_date","target_end_date","early_end_date","act_end_date"]); if(ds&&(!r.MinStart||dateValue(ds)<dateValue(r.MinStart)))r.MinStart=ds; if(df&&(!r.MaxFinish||dateValue(df)>dateValue(r.MaxFinish)))r.MaxFinish=df;});
+ return Object.values(map).sort((a,b)=>String(a.WBS).localeCompare(String(b.WBS)));
+}
+function renderRollup(){
+ const rows=rollupRows(); set("ruWbs",rows.length); set("ruActs",sum(rows,r=>r.ActivityCount)); set("ruCost",Math.round(sum(rows,r=>r.CostLikeTotal))); set("ruAssign",sum(rows,r=>r.Assignments));
+ table("rollupTable",rows,["WBS","ActivityCount","MinStart","MaxFinish","TotalDurationHours","TotalFloatHours","Assignments","CostLikeTotal"],1200);
+}
+function distributionRows(){
+ const total=num(el("distTotal").value), start=el("distStart").value, finish=el("distFinish").value, period=el("distPeriod").value, profile=el("distProfile").value, weekend=el("distWeekend").value, special=(el("distSpecial").value||"").split(",").map(s=>s.trim()).filter(Boolean);
+ const s=dateValue(start), f=dateValue(finish); if(!s||!f||f<s||!total)return[];
+ const msDay=86400000, step=period==="day"?msDay:period==="week"?7*msDay:30*msDay; const buckets=[]; for(let t=s,i=0;t<=f;t+=step,i++){const d=new Date(t); const iso=d.toISOString().slice(0,10); if(weekend==="exclude"&&(d.getUTCDay()===0||d.getUTCDay()===6))continue; if(special.includes(iso))continue; buckets.push({Period:iso,Index:i})}
+ const n=buckets.length||1; let weights=buckets.map((b,i)=>profile==="linear"?1:profile==="frontload"?(n-i):(i+1)); const sw=sum(weights,x=>x)||1;
+ return buckets.map((b,i)=>({Period:b.Period,Profile:profile,Weight:weights[i],DistributedValue:Math.round((total*weights[i]/sw)*100)/100,Cumulative:0})).map((r,i,a)=>{r.Cumulative=Math.round(sum(a.slice(0,i+1),x=>x.DistributedValue)*100)/100;return r});
+}
+function renderDistribution(){
+ const rows=distributionRows(); table("distributionTable",rows,["Period","Profile","Weight","DistributedValue","Cumulative"],1000);
+}
+function renderXerUtilityStatus(){
+ const hasPobs=!!A.tables.POBS; const rows=[
+  {Utility:"POBS Cleaner",Status:hasPobs?"POBS table found":"No POBS table found",FreeHTML:"Download cleaned text",ProJava:"Full XER sanitizer"},
+  {Utility:"Print Calendars",Status:A.calendars.length+" calendar rows",FreeHTML:"Printable HTML",ProJava:"Excel/PDF calendar workbook"},
+  {Utility:"Create WBS from Excel to XER",Status:"Template available",FreeHTML:"CSV template only",ProJava:"Real importable XER writer"},
+  {Utility:"Create Activity Codes from Excel to XER",Status:"Template available",FreeHTML:"CSV template only",ProJava:"Real importable XER writer"},
+  {Utility:"Create Activity List from Excel to XER",Status:"Template available",FreeHTML:"CSV template only",ProJava:"Real importable XER writer"},
+  {Utility:"Create Resource Dictionary from Excel to XER",Status:"Template available",FreeHTML:"CSV template only",ProJava:"Real importable XER writer"}
+ ];
+ table("xerUtilityTable",rows,["Utility","Status","FreeHTML","ProJava"],1000);
+}
+function downloadPobsCleanedXer(){
+ if(!A.name||!A.rawText){alert("Load a XER file first.");return}
+ const lines=A.rawText.split(/\r?\n/); let out=[],skip=false;
+ for(const line of lines){ if(line.startsWith("%T\tPOBS")){skip=true;continue} if(skip&&line.startsWith("%T\t"))skip=false; if(!skip)out.push(line); }
+ download(out.join("\n"),A.name.replace(/\.xer$/i,"")+"_POBS_CLEANED.xer","text/plain");
+}
+function downloadCalendarReport(){
+ const rows=A.calendars; let h=`<!doctype html><meta charset="utf-8"><title>AURORA Calendar Report</title><style>body{font-family:Segoe UI,Arial;margin:24px}table{border-collapse:collapse;width:100%;font-size:12px}td,th{border:1px solid #ccc;padding:6px}th{background:#173b5d;color:white}</style><h1>AURORA XER Calendar Report</h1><p>${esc(A.name||"No file")}</p>${htmlTable(rows,A.fields.CALENDAR||Object.keys(rows[0]||{}))}`;
+ download(h,"AURORA_Calendar_Report.html","text/html");
+}
+function downloadTemplatePack(){
+ const wbs="Level1,Level2,Level3,WBS Name\nProject,Area A,Zone 1,Foundation\n";
+ const codes="Code Type,Level1,Level2,Code Value,Description\nDiscipline,Civil,Earthworks,EW,Earthworks\n";
+ const acts="Activity ID,Activity Name,Activity Type,WBS Code,Duration\nA1000,Sample Activity,Task Dependent,WBS-001,10\n";
+ const res="Resource ID,Resource Name,Resource Type,Unit Price,Unit of Measure\nLAB01,Labor Crew,Labor,100,hr\n";
+ download(wbs+"\n--- Activity Codes ---\n"+codes+"\n--- Activities ---\n"+acts+"\n--- Resources ---\n"+res,"AURORA_XER_Input_Templates.csv","text/csv");
+}
+function htmlTable(rows,cols){ if(!rows||!rows.length)return"<p>No data.</p>"; return"<table><tr>"+cols.map(c=>`<th>${esc(c)}</th>`).join("")+"</tr>"+rows.map(r=>"<tr>"+cols.map(c=>`<td>${esc(r[c]??"")}</td>`).join("")+"</tr>").join("")+"</table>"}
+
 function renderDataDict(){const names=Object.keys(A.tables).sort();let cards="";names.forEach(n=>{cards+=`<div class="card"><h3>${esc(n)}</h3><div class="big">${A.tables[n].length}</div><div class="small">${(A.fields[n]||[]).length} fields</div></div>`});setHtml("tableCoverage",cards||"<div class='notice'>No tables loaded.</div>");const rows=names.map(n=>({Table:n,Rows:A.tables[n].length,Fields:(A.fields[n]||[]).length,FieldList:(A.fields[n]||[]).slice(0,18).join(", ")}));table("dictTable",rows,["Table","Rows","Fields","FieldList"],1000)}
 function renderRawSel(){const s=el("rawSel"), names=Object.keys(A.tables).sort();s.innerHTML=names.map(x=>`<option>${esc(x)}</option>`).join("");renderRaw()}
 function renderRaw(){const name=el("rawSel").value, q=(el("rawSearch").value||"").toLowerCase();let data=A.tables[name]||[];if(q)data=data.filter(r=>Object.values(r).join(" ").toLowerCase().includes(q));const cols=A.fields[name]||Object.keys(data[0]||{});table("rawTable",data,cols.slice(0,60),800)}
@@ -520,8 +711,8 @@ function sum(arr,fn){return arr.reduce((a,x)=>a+fn(x),0)}
 function bars(id,obj){const vals=Object.entries(obj||{}).sort((a,b)=>b[1]-a[1]), max=Math.max(1,...vals.map(x=>x[1]));el(id).innerHTML=vals.length?vals.map(([k,v])=>`<div class="barline"><div class="lab">${esc(k)}</div><div class="bar"><div class="fill" style="width:${Math.round(v/max*100)}%"></div></div><div class="val">${Math.round(v*100)/100}</div></div>`).join(""):"No data."}
 function table(id,rows,cols,lim=800){const e=el(id);if(!rows||!rows.length){e.innerHTML="<tr><td>No data.</td></tr>";return}e.innerHTML="<thead><tr>"+cols.map(c=>`<th>${esc(c)}</th>`).join("")+"</tr></thead><tbody>"+rows.slice(0,lim).map(r=>"<tr>"+cols.map(c=>`<td>${fmt(r[c])}</td>`).join("")+"</tr>").join("")+"</tbody>"}
 function fmt(x){const s=esc(x??"");if(s==="red")return'<span class="badge r">red</span>';if(s==="amber")return'<span class="badge a">amber</span>';if(s==="blue")return'<span class="badge b">blue</span>';if(s==="PASS")return'<span class="badge g">PASS</span>';if(s==="WARN")return'<span class="badge a">WARN</span>';return s}
-function exportCSV(kind){if(!A.name){alert("Load XER first.");return}let data=[],name=kind;if(kind==="activities")data=A.tasks.map(taskRow);else if(kind==="warnings")data=A.warnings;else if(kind==="raw"){const t=el("rawSel").value;data=A.tables[t]||[];name=t}if(!data.length){alert("No rows.");return}const cols=Object.keys(data[0]);download(cols.map(csv).join(",")+"\n"+data.map(r=>cols.map(c=>csv(r[c]??"")).join(",")).join("\n"),"AURORA_"+name+".csv","text/csv")}
-function exportReport(){if(!A.name){alert("Load XER first.");return}const h=`<!doctype html><meta charset="utf-8"><title>AURORA XER Report</title><style>body{font-family:Segoe UI,Arial;margin:24px}table{border-collapse:collapse;width:100%;font-size:12px}td,th{border:1px solid #ccc;padding:6px}th{background:#173b5d;color:white}pre{background:#eef6ff;padding:12px;border-radius:8px;white-space:pre-wrap}</style><h1>AURORA XER Insight v0.4 Report</h1><p><b>${esc(A.name)}</b><br>${new Date().toLocaleString()}</p><pre>${el("execSummary").textContent}</pre><h2>Quality Warnings</h2>${htmlTable(A.warnings,["severity","type","activity","name","detail"])}<h2>Risk Register</h2>${htmlTable(A.risks,["RiskID","ActivityID","Risk","Impact","Probability","Score","RecommendedAction","Detail"])}<h2>Comparison</h2>${htmlTable(comparison.rows.slice(0,800),["Change","ActivityID","Field","Previous","Current"])}`;download(h,"AURORA_XER_Insight_v0_3_Report.html","text/html")}
+function exportCSV(kind){if(!A.name&&kind!=="distribution"){alert("Load XER first.");return}let data=[],name=kind;if(kind==="activities")data=A.tasks.map(taskRow);else if(kind==="warnings")data=A.warnings;else if(kind==="wbs-organizer")data=wbsOrganizerRows();else if(kind==="rollup")data=rollupRows();else if(kind==="distribution")data=distributionRows();else if(kind==="raw"){const t=el("rawSel").value;data=A.tables[t]||[];name=t}if(!data.length){alert("No rows.");return}const cols=Object.keys(data[0]);download(cols.map(csv).join(",")+"\n"+data.map(r=>cols.map(c=>csv(r[c]??"")).join(",")).join("\n"),"AURORA_"+name+".csv","text/csv")}
+function exportReport(){if(!A.name){alert("Load XER first.");return}const h=`<!doctype html><meta charset="utf-8"><title>AURORA XER Report</title><style>body{font-family:Segoe UI,Arial;margin:24px}table{border-collapse:collapse;width:100%;font-size:12px}td,th{border:1px solid #ccc;padding:6px}th{background:#173b5d;color:white}pre{background:#eef6ff;padding:12px;border-radius:8px;white-space:pre-wrap}</style><h1>AURORA XER Insight v0.5 Report</h1><p><b>${esc(A.name)}</b><br>${new Date().toLocaleString()}</p><pre>${el("execSummary").textContent}</pre><h2>Quality Warnings</h2>${htmlTable(A.warnings,["severity","type","activity","name","detail"])}<h2>Risk Register</h2>${htmlTable(A.risks,["RiskID","ActivityID","Risk","Impact","Probability","Score","RecommendedAction","Detail"])}<h2>Comparison</h2>${htmlTable(comparison.rows.slice(0,800),["Change","ActivityID","Field","Previous","Current"])}`;download(h,"AURORA_XER_Insight_v0_3_Report.html","text/html")}
 function htmlTable(rows,cols){if(!rows.length)return"<p>No data.</p>";return"<table><tr>"+cols.map(c=>`<th>${esc(c)}</th>`).join("")+"</tr>"+rows.map(r=>"<tr>"+cols.map(c=>`<td>${esc(r[c]??"")}</td>`).join("")+"</tr>").join("")+"</table>"}
 function set(id,x){el(id).textContent=x}function setHtml(id,x){el(id).innerHTML=x}function el(id){return document.getElementById(id)}function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]))}function csv(v){return'"'+String(v??"").replace(/"/g,'""')+'"'}function download(c,n,t){const b=new Blob([c],{type:t}),u=URL.createObjectURL(b),a=document.createElement("a");a.href=u;a.download=n;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(u)}
 renderAll();
