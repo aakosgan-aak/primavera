@@ -12,17 +12,11 @@ Portable browser-based Primavera P6 XER schedule analysis toolkit.
 
 ## Run
 
-Open the application file:
+Use the GitHub Pages live web app link to run the application:
 
-[AURORA XER Insight Free v0.5](AURORA_XER_Insight_Free_v0_4/index.html)
+[AURORA XER Insight Free v0.5 - Live Web App](https://aakosgan-aak.github.io/primavera/AURORA_XER_Insight_Free_v0_4/)
 
-Or open this file manually in Chrome or Edge:
-
-AURORA_XER_Insight_Free_v0_4/index.html
-
-Live web app:
-
-https://aakosgan-aak.github.io/primavera/AURORA_XER_Insight_Free_v0_4/
+Do not use the repository HTML file link to run the app. GitHub may display the HTML source code there.
 
 ## Main Features
 
@@ -80,8 +74,6 @@ The folder name still contains `v0_4` because the original GitHub Pages link is 
 
 ## Premium AURORA P6 Suite Features
 
-The following features should remain separate in the premium AURORA P6 Suite layer:
-
 - XER writer / importable XER validator
 - Primavera P6 API integration
 - Oracle Primavera Cloud / OPC REST integration
@@ -95,7 +87,7 @@ The following features should remain separate in the premium AURORA P6 Suite lay
 ## Recommended Use
 
 1. Export a `.xer` file from Primavera P6.
-2. Open the live web app or open `AURORA_XER_Insight_Free_v0_4/index.html` in Chrome or Edge.
+2. Open the live web app link above in Chrome or Edge.
 3. Load the XER file.
 4. Review dashboard, DCMA Lite, S-Curve Lite, schedule quality, WBS Organizer, Gantt, roll-up, logic, codes, UDFs, resources and raw tables.
 5. Export CSV or HTML report if needed.
